@@ -11,6 +11,8 @@ from scipy.ndimage import maximum_filter, gaussian_filter
 import common
 from common import CocoPairsNetwork, CocoPairs, CocoPart
 
+import readKeyPoint
+
 logger = logging.getLogger('TfPoseEstimator')
 logger.setLevel(logging.INFO)
 ch = logging.StreamHandler()
@@ -305,7 +307,7 @@ class TfPoseEstimator:
                 centers[i] = center
                 cv2.circle(npimg, center, 3, common.CocoColors[i], thickness=3, lineType=8, shift=0)
 
-                print (body_part)
+                readKeyPoint.readKeyPoints(i, body_part.x, body_part.y)
 
             # draw line
             for pair_order, pair in enumerate(common.CocoPairsRender):
@@ -313,7 +315,7 @@ class TfPoseEstimator:
                     continue
 
                 npimg = cv2.line(npimg, centers[pair[0]], centers[pair[1]], common.CocoColors[pair_order], 3)
-
+        readKeyPoint.storeData()
         return npimg
 
     def _get_scaled_img(self, npimg, scale):
@@ -450,3 +452,4 @@ class TfPoseEstimator:
 
         humans = PoseEstimator.estimate(self.heatMat, self.pafMat)
         return humans
+    
