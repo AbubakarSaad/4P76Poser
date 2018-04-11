@@ -54,7 +54,6 @@ def storeData(numHumans, currentHuman):
     # writer = csv.writer(myFile)
     i = 0
     j = 0
-    
     while(i < 18):
         # print(i, j)
 
@@ -71,11 +70,13 @@ def storeData(numHumans, currentHuman):
             j+=1
         i+=1
         # print(myData)
-    
+
     if (currentHuman < numHumans-1):
         myFile.write('\n')
 
     myFile.close()
+    myData = []
+
 
 
 
