@@ -21,7 +21,10 @@ ch.setLevel(logging.DEBUG)
 formatter = logging.Formatter('[%(asctime)s] [%(name)s] [%(levelname)s] %(message)s')
 ch.setFormatter(formatter)
 logger.addHandler(ch)
+outputfile = 'trainingSquats.csv'
 
+def dataCleanup():
+    pass
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(description='tf-pose-estimation run')
@@ -35,6 +38,11 @@ if __name__ == '__main__':
     w, h = model_wh(args.resolution)
     e = TfPoseEstimator(get_graph_path(args.model), target_size=(w, h))
     directory_in_str = sys.path[0] + "\\..\\images\\Squattingpeople\\"
+
+    try:
+        os.remove(outputfile)
+    except OSError:
+        pass
 
     for file in os.listdir(directory_in_str):
         filename = os.fsdecode(file)
@@ -56,12 +64,14 @@ if __name__ == '__main__':
             # cv2.imshow('tf-pose-estimation result', image)
             # cv2.waitKey()
 
-            myFile = open('trainingSquats.csv', 'a')
+            myFile = open(outputfile, 'a')
             myFile.write(str(filename) + ',')
             # print(filename)
             myFile.write('\n')
             # break
             myFile.close()
+
+    dataCleanup()
 
     sys.exit(0)
 

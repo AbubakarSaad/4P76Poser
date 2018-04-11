@@ -297,29 +297,32 @@ class TfPoseEstimator:
         centers = {}
 
         currentHumanInd = 0
-        for human in humans:
+        if (len(humans) == 0):
+            readKeyPoint.storeData(0, 0)
+        else:
+            for human in humans:
 
-            # draw point
-            for i in range(common.CocoPart.Background.value):
-                if i not in human.body_parts.keys():
-                    continue
+                # draw point
+                for i in range(common.CocoPart.Background.value):
+                    if i not in human.body_parts.keys():
+                        continue
 
-                body_part = human.body_parts[i]
-                
-                center = (int(body_part.x * image_w + 0.5), int(body_part.y * image_h + 0.5))
-                centers[i] = center
-                cv2.circle(npimg, center, 3, common.CocoColors[i], thickness=3, lineType=8, shift=0)
+                    body_part = human.body_parts[i]
+                    
+                    center = (int(body_part.x * image_w + 0.5), int(body_part.y * image_h + 0.5))
+                    centers[i] = center
+                    cv2.circle(npimg, center, 3, common.CocoColors[i], thickness=3, lineType=8, shift=0)
 
-                readKeyPoint.readKeyPoints(i, body_part.x, body_part.y)
+                    readKeyPoint.readKeyPoints(i, body_part.x, body_part.y)
 
-            # draw line
-            for pair_order, pair in enumerate(common.CocoPairsRender):
-                if pair[0] not in human.body_parts.keys() or pair[1] not in human.body_parts.keys():
-                    continue
+                # draw line
+                for pair_order, pair in enumerate(common.CocoPairsRender):
+                    if pair[0] not in human.body_parts.keys() or pair[1] not in human.body_parts.keys():
+                        continue
 
-                npimg = cv2.line(npimg, centers[pair[0]], centers[pair[1]], common.CocoColors[pair_order], 3)
-            readKeyPoint.storeData(len(humans), currentHumanInd)
-            currentHumanInd += 1
+                    npimg = cv2.line(npimg, centers[pair[0]], centers[pair[1]], common.CocoColors[pair_order], 3)
+                readKeyPoint.storeData(len(humans), currentHumanInd)
+                currentHumanInd += 1
         return npimg
 
     def _get_scaled_img(self, npimg, scale):

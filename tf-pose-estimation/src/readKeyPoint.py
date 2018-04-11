@@ -46,33 +46,38 @@ def normalizeData():
 
 def storeData(numHumans, currentHuman):
     global myData
-
-    normalizeData()
-
     myFile = open('trainingSquats.csv', 'a')
-    # print(myFile)
-    # writer = csv.writer(myFile)
-    i = 0
-    j = 0
-    while(i < 18):
-        # print(i, j)
 
-        if(i < len(myData) and myData[j][0] == i):
-            # print(myData[i][1], myData[i][2])
-            myFile.write(str(myData[i][1]) + ',')           
-            myFile.write(str(myData[i][2]) + ',')
-            j+=1
-        else:
-            # print("Insert new array")
-            myData.insert(i, [i, -1, -1])
+    if (numHumans == 0):
+        for i in range(36):
             myFile.write(str(-1) + ',')
-            myFile.write(str(-1) + ',')
-            j+=1
-        i+=1
-        # print(myData)
+    else:
 
-    if (currentHuman < numHumans-2):
-        myFile.write('\n')
+        normalizeData()
+
+        # print(myFile)
+        # writer = csv.writer(myFile)
+        i = 0
+        j = 0
+        while(i < 18):
+            # print(i, j)
+
+            if(i < len(myData) and myData[j][0] == i):
+                # print(myData[i][1], myData[i][2])
+                myFile.write(str(myData[i][1]) + ',')           
+                myFile.write(str(myData[i][2]) + ',')
+                j+=1
+            else:
+                # print("Insert new array")
+                myData.insert(i, [i, -1, -1])
+                myFile.write(str(-1) + ',')
+                myFile.write(str(-1) + ',')
+                j+=1
+            i+=1
+            # print(myData)
+
+        if (currentHuman < numHumans-1):
+            myFile.write('\n')
 
     myFile.close()
     myData = []
