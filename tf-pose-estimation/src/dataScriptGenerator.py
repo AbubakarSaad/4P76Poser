@@ -93,7 +93,7 @@ if __name__ == '__main__':
             # cv2.waitKey()
 
             myFile = open(outputfile, 'a')
-            myFile.write(str(filename) + ',')
+            # myFile.write(str(filename) + ',')
             # print(filename)
             myFile.write('\n')
             # break
