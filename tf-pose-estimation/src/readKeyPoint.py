@@ -44,12 +44,12 @@ def normalizeData():
 
     #done?
 
-def storeData():
+def storeData(numHumans, currentHuman):
     global myData
 
     normalizeData()
 
-    myFile = open('../../squattingDataSet.csv', 'a')
+    myFile = open('trainingSquats.csv', 'a')
     # print(myFile)
     # writer = csv.writer(myFile)
     i = 0
@@ -71,6 +71,11 @@ def storeData():
             j+=1
         i+=1
         # print(myData)
+    
+    if (currentHuman < numHumans-1):
+        myFile.write('\n')
+
+    myFile.close()
 
 
 

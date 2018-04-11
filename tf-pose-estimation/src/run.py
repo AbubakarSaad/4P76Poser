@@ -76,9 +76,9 @@ if __name__ == '__main__':
     a = fig.add_subplot(2, 2, 4)
     a.set_title('Vectormap-y')
     # plt.imshow(CocoPose.get_bgimg(inp, target_size=(vectmap.shape[1], vectmap.shape[0])), alpha=0.5)
-    plt.imshow(tmp2_even, cmap=plt.cm.gray, alpha=0.5)
+    # plt.imshow(tmp2_even, cmap=plt.cm.gray, alpha=0.5)
     plt.colorbar()
-    plt.show()
+    # plt.show()
 
     import sys
     sys.exit(0)
@@ -104,6 +104,6 @@ if __name__ == '__main__':
 
     for i, single_3d in enumerate(pose_3d):
         plot_pose(single_3d)
-    plt.show()
+    # plt.show()
 
     pass
