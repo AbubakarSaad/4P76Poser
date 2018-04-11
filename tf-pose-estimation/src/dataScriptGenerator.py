@@ -4,6 +4,7 @@ import time
 import ast
 import os
 import sys
+import csv
 
 import common
 import cv2
@@ -22,11 +23,38 @@ formatter = logging.Formatter('[%(asctime)s] [%(name)s] [%(levelname)s] %(messag
 ch.setFormatter(formatter)
 logger.addHandler(ch)
 outputfile = 'trainingSquats.csv'
+cleanedOutputfile = 'trainingSquatsClean.csv'
 
 def dataCleanup():
-    pass
+    print ("  CLEANING DATA...")
+
+    keypointData = open(outputfile, 'r')
+    keypointReader = csv.reader(keypointData)
+    
+    with open(outputfile, 'w', newline='') as cleanKeypointData:
+        cleanKeypointWriter = csv.writer(cleanKeypointData)
+    
+    for row in keypointReader:
+        print (row)
+        badKeypointCount = 0
+
+        #16 is the start of our x y pairs for L and R hip, knee and ankle keypoints
+        for keypointIndex in range (16,28,2):
+
+            if (row[keypointIndex] == "-1"):
+                badKeypointCount += 1
+        
+        if (badKeypointCount < 4):
+            #good data, lets write it to our new clean file
+            cleanKeypointWriter.writerow(row)
+
+    
+    print ( "DATA CLEAN COMPLETE" )
+    keypointData.close()
+    cleanKeypointData.close()
 
 if __name__ == '__main__':
+
     parser = argparse.ArgumentParser(description='tf-pose-estimation run')
     # parser.add_argument('--image', type=str, default='./images/01cfe37e64591a6069862176304347df--stay-at-home-mom-squat-exercise.jpg')
     parser.add_argument('--resolution', type=str, default='432x368', help='network input resolution. default=432x368')
