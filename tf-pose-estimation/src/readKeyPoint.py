@@ -22,7 +22,6 @@ def storeData():
     # writer = csv.writer(myFile)
     i = 0
     j = 0
-    
     while(i < 18):
         # print(i, j)
 
@@ -39,6 +38,8 @@ def storeData():
             j+=1
         i+=1
         # print(myData)
+    myData = []
+
 
 
 
