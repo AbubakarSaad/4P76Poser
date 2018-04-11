@@ -71,7 +71,7 @@ def storeData(numHumans, currentHuman):
         i+=1
         # print(myData)
 
-    if (currentHuman < numHumans-1):
+    if (currentHuman < numHumans-2):
         myFile.write('\n')
 
     myFile.close()
