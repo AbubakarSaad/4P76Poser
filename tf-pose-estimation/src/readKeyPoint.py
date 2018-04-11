@@ -78,8 +78,4 @@ def storeData(numHumans, currentHuman):
     myData = []
 
 
-
-
-
-
     
