@@ -17,7 +17,7 @@ def readKeyPoints(bodyIndex, bodyPartx, bodyParty):
 
 def storeData():
     global myData
-    myFile = open('/Users/abubakarsaad/Documents/MachineLearning/4P76Poser/example2.csv', 'a')
+    myFile = open('trainingSquats.csv', 'a')
     # print(myFile)
     # writer = csv.writer(myFile)
     i = 0

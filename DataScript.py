@@ -20,7 +20,7 @@ for file in os.listdir(directory_in_str):
         # print(command)
         os.system(command)
 
-        myFile = open('example2.csv', 'a')
+        myFile = open('trainingSquats.csv', 'a')
         myFile.write(str(filename) + ',')
         # print(filename)
         myFile.write('\n')
