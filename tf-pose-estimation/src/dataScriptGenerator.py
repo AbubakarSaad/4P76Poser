@@ -31,8 +31,8 @@ def dataCleanup():
     keypointData = open(outputfile, 'r')
     keypointReader = csv.reader(keypointData)
     
-    with open(outputfile, 'w', newline='') as cleanKeypointData:
-        cleanKeypointWriter = csv.writer(cleanKeypointData)
+    cleanKeypointData = open(cleanedOutputfile, 'w', newline='')
+    cleanKeypointWriter = csv.writer(cleanKeypointData)
     
     for row in keypointReader:
         print (row)
