@@ -46,7 +46,7 @@ def normalizeData():
 
 def storeData(numHumans, currentHuman):
     global myData
-    myFile = open('trainingSquats.csv', 'a')
+    myFile = open('trainingSquatting.csv', 'a')
 
     if (numHumans == 0):
         for i in range(36):
@@ -56,7 +56,7 @@ def storeData(numHumans, currentHuman):
         normalizeData()
 
         # print(myFile)
-        # writer = csv.writer(myFile)
+        # writer = csv.writer(myFile) 
         i = 0
         j = 0
         while(i < 18):

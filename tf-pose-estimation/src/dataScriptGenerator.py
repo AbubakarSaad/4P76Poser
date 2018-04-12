@@ -22,8 +22,8 @@ ch.setLevel(logging.DEBUG)
 formatter = logging.Formatter('[%(asctime)s] [%(name)s] [%(levelname)s] %(message)s')
 ch.setFormatter(formatter)
 logger.addHandler(ch)
-outputfile = 'trainingSquats.csv'
-cleanedOutputfile = 'trainingSquatsClean.csv'
+outputfile = 'trainingSquatting.csv'
+cleanedOutputfile = 'trainingSquattingClean.csv'
 
 def dataCleanup():
     print ("  CLEANING DATA...")
@@ -46,7 +46,7 @@ def dataCleanup():
         
         if (badKeypointCount < 4):
             #good data, lets write it to our new clean file
-            cleanKeypointWriter.writerow(row)
+            cleanKeypointWriter.writerow(row[:len(row)-1])
 
     
     print ( "DATA CLEAN COMPLETE" )
