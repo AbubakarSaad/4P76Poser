@@ -21,7 +21,7 @@ n_input_nodes = 36
 n_nodes_hl1 = 50
 n_nodes_hl2 = 50
 n_output_node = 1
-hm_epochs = 30
+hm_epochs = 100
 learning_rate = 0.01
 minWeight = -1.0
 maxWeight = 1.0
@@ -49,7 +49,7 @@ def neural_network_model(data):
 
     output = tf.matmul(l2,output_layer['weights']) + output_layer['biases']
     output = tf.nn.sigmoid(output)
-    output = tf.Print(output, [output], "Output Layer: ")
+    # output = tf.Print(output, [output], "Output Layer: ")
 
     return output
 
@@ -67,6 +67,8 @@ def train_neural_network(x):
 
         for epoch in range(hm_epochs):
             epoch_loss = 0
+            accuracy_standing = 0
+            accuracy_squating = 0
             
             np.random.shuffle(xy_data)
             data_x = xy_data[0:328, 0:36]
@@ -76,14 +78,18 @@ def train_neural_network(x):
             for piece in range(len(data_x)):
                 input_x =  [data_x[piece]]
                 expected_y = [data_y[piece]]
-                _, c = sess.run([optimizer, cost], feed_dict={x: input_x, y: expected_y})
+                _, c, predict = sess.run([optimizer, cost, prediction], feed_dict={x: input_x, y: expected_y})
 
                 epoch_loss += c
-
-            # print('Epoch', epoch, 'completed out of',hm_epochs,'loss:',epoch_loss)
-
-
-
+                # print(expected_y[0], predict[0])
+                # print('Epoch', epoch, 'completed out of',hm_epochs,'loss:',epoch_loss)
+                if predict[0] > 0.500000:
+                    accuracy_squating += 1
+                elif predict[0] < 0.50000:
+                    accuracy_standing += 1
+ 
+            print("Epoch: ", epoch, ", accuracy_squating: ", (accuracy_squating)/len(data_x))
+            print("Epoch: ", epoch, ", accuracy_standing: ", (accuracy_standing)/len(data_x))
             my_acc = tf.reduce_sum(tf.cast(tf.equal(x, y), tf.float32))
             # print(sess.run(my_acc, feed_dict={x: input_x, y: expected_y}))  # 1.0
 
