@@ -73,32 +73,36 @@ standingDataExpected = np.zeros((standingData.shape[0], 1))
 data_x = np.concatenate((squattingData , standingData), axis=0)
 data_y = np.concatenate((squattingDataExpected, standingDataExpected), axis=0)
 
+# The combined data data for shuffling purposes.
+xy_data = np.concatenate((data_x, data_y), axis=1)
+
+# Parameters
+n_input_nodes = 36
 n_nodes_hl1 = 50
 n_nodes_hl2 = 50
-
-n_classes = 1
+n_output_node = 1
 
 x = tf.placeholder('float', [None, 36])
-y = tf.placeholder('float')
+y = tf.placeholder('float', [None, n_output_node])
 
 def neural_network_model(data):
-    hidden_1_layer = {'weights':tf.Variable(tf.random_normal([36, n_nodes_hl1])),
-                      'biases':tf.Variable(tf.random_normal([n_nodes_hl1]))}
+    hidden_1_layer = {'weights':tf.Variable(tf.random_uniform([n_input_nodes, n_nodes_hl1], -1.0, 1.0)),
+                      'biases':tf.Variable(tf.random_uniform([n_nodes_hl1], -1.0, 1.0))}
 
-    hidden_2_layer = {'weights':tf.Variable(tf.random_normal([n_nodes_hl1, n_nodes_hl2])),
-                      'biases':tf.Variable(tf.random_normal([n_nodes_hl2]))}
+    hidden_2_layer = {'weights':tf.Variable(tf.random_uniform([n_nodes_hl1, n_nodes_hl2], -1.0, 1.0)),
+                      'biases':tf.Variable(tf.random_uniform([n_nodes_hl2], -1.0, 1.0))}
 
-    output_layer = {'weights':tf.Variable(tf.random_normal([n_nodes_hl2, n_classes])),
-                    'biases':tf.Variable(tf.random_normal([n_classes])),}
-
+    output_layer = {'weights':tf.Variable(tf.random_uniform([n_nodes_hl2, n_output_node], -1.0, 1.0)),
+                    'biases':tf.Variable(tf.random_uniform([n_output_node], -1.0, 1.0))}
 
     l1 = tf.add(tf.matmul(data,hidden_1_layer['weights']), hidden_1_layer['biases'])
-    l1 = tf.nn.relu(l1)
+    l1 = tf.nn.sigmoid(l1)
 
     l2 = tf.add(tf.matmul(l1,hidden_2_layer['weights']), hidden_2_layer['biases'])
-    l2 = tf.nn.relu(l2)
+    l2 = tf.nn.sigmoid(l2)
 
     output = tf.matmul(l2,output_layer['weights']) + output_layer['biases']
+    output = tf.Print(output, [output], "Output Layer:")
 
     return output
 
@@ -119,6 +123,11 @@ def train_neural_network(x):
         for epoch in range(hm_epochs):
             epoch_loss = 0
 
+            np.random.shuffle(xy_data)
+            data_x = xy_data[0:328, 0:36]
+            data_y = xy_data[0:328, 36]
+            data_y = np.resize(data_y, (328, 1))
+
             for piece in range(len(data_x)):
                 #print(piece)
                 input_x =  [data_x[piece]]
@@ -134,9 +143,7 @@ def train_neural_network(x):
 
 
             my_acc = tf.reduce_sum(tf.cast(tf.equal(x, y), tf.float32))
-            print(sess.run(my_acc, feed_dict={x: input_x, y: expected_y}))  # 1.0
-
-
+            #print(sess.run(my_acc, feed_dict={x: input_x, y: expected_y}))  # 1.0
 
 train_neural_network(x)
 
