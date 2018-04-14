@@ -30,12 +30,12 @@ inputs = tf.placeholder(tf.float32)
 expected_output = tf.placeholder(tf.float32)
 
 # Weights
-weights_1 = tf.Variable(tf.random_uniform([n_input, n_hidden], -1.0, 1.0))
-weights_2 = tf.Variable(tf.random_uniform([n_hidden, n_output], -1.0, 1.0))
+weights_1 = tf.Variable(tf.random_uniform([n_input, n_hidden], minWeight, maxWeight))
+weights_2 = tf.Variable(tf.random_uniform([n_hidden, n_output], minWeight, maxWeight))
 
 # Bias
-bias1 = tf.Variable(tf.random_uniform([n_hidden], -1.0, 1.0))
-bias2 = tf.Variable(tf.random_uniform([n_output], -1.0, 1.0))
+bias1 = tf.Variable(tf.random_uniform([n_hidden], minWeight, maxWeight))
+bias2 = tf.Variable(tf.random_uniform([n_output], minWeight, maxWeight))
 
 sigmoided_hidden_layer = tf.sigmoid(tf.matmul(inputs, weights_1) + bias1)
 sigmoided_output_layer = tf.sigmoid(tf.matmul(sigmoided_hidden_layer, weights_2) + bias2)
@@ -83,19 +83,21 @@ n_nodes_hl2 = 50
 n_output_node = 1
 hm_epochs = 30
 learning_rate = 0.01
+minWeight = -0.5
+maxWeight = 0.5
 
 x = tf.placeholder('float', [None, 36])
 y = tf.placeholder('float', [None, n_output_node])
 
 def neural_network_model(data):
-    hidden_1_layer = {'weights':tf.Variable(tf.random_uniform([n_input_nodes, n_nodes_hl1], -1.0, 1.0)),
-                      'biases':tf.Variable(tf.random_uniform([n_nodes_hl1], -1.0, 1.0))}
+    hidden_1_layer = {'weights':tf.Variable(tf.random_uniform([n_input_nodes, n_nodes_hl1], minWeight, maxWeight)),
+                      'biases':tf.Variable(tf.random_uniform([n_nodes_hl1], minWeight, maxWeight))}
 
-    hidden_2_layer = {'weights':tf.Variable(tf.random_uniform([n_nodes_hl1, n_nodes_hl2], -1.0, 1.0)),
-                      'biases':tf.Variable(tf.random_uniform([n_nodes_hl2], -1.0, 1.0))}
+    hidden_2_layer = {'weights':tf.Variable(tf.random_uniform([n_nodes_hl1, n_nodes_hl2], minWeight, maxWeight)),
+                      'biases':tf.Variable(tf.random_uniform([n_nodes_hl2], minWeight, maxWeight))}
 
-    output_layer = {'weights':tf.Variable(tf.random_uniform([n_nodes_hl2, n_output_node], -1.0, 1.0)),
-                    'biases':tf.Variable(tf.random_uniform([n_output_node], -1.0, 1.0))}
+    output_layer = {'weights':tf.Variable(tf.random_uniform([n_nodes_hl2, n_output_node], minWeight, maxWeight)),
+                    'biases':tf.Variable(tf.random_uniform([n_output_node], minWeight, maxWeight))}
 
     l1 = tf.add(tf.matmul(data,hidden_1_layer['weights']), hidden_1_layer['biases'])
     l1 = tf.nn.sigmoid(l1)
@@ -140,7 +142,7 @@ def train_neural_network(x):
 
 
             my_acc = tf.reduce_sum(tf.cast(tf.equal(x, y), tf.float32))
-            #print(sess.run(my_acc, feed_dict={x: input_x, y: expected_y}))  # 1.0
+            #print(sess.run(my_acc, feed_dict={x: input_x, y: expected_y}))  # maxWeight
 
 train_neural_network(x)
 
