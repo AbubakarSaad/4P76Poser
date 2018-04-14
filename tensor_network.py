@@ -1,71 +1,10 @@
-'''
-ORIGINAL CODE COMMENTED OUT 
-
-np.set_printoptions(threshold=np.nan)
-
-
-squattingData = np.genfromtxt(sys.path[0] + '\\tf-pose-estimation\\src\\trainingSquattingClean.csv', delimiter=',')
-standingData = np.genfromtxt(sys.path[0] + '\\tf-pose-estimation\\src\\trainingStandingClean.csv', delimiter=',')
-
-squattingDataExpected = np.ones((squattingData.shape[0], 1))
-standingDataExpected = np.zeros((standingData.shape[0], 1))
-
-# Sample Dataset
-x_data = np.concatenate((squattingData , standingData), axis=0)
-y_data = np.concatenate((squattingDataExpected, standingDataExpected), axis=0)
-
-
-print(x_data.shape)
-print(y_data.shape)
-
-# output_layerperparamters
-n_input = 36
-n_hidden = 10
-n_output = 1
-learning_rate = 0.001
-epochs = 10000
-display_step = 10
-
-# Placeholders
-inputs = tf.placeholder(tf.float32)
-expected_output = tf.placeholder(tf.float32)
-
-# Weights
-weights_1 = tf.Variable(tf.random_uniform([n_input, n_hidden], -1.0, 1.0))
-weights_2 = tf.Variable(tf.random_uniform([n_hidden, n_output], -1.0, 1.0))
-
-# Bias
-bias1 = tf.Variable(tf.random_uniform([n_hidden], -1.0, 1.0))
-bias2 = tf.Variable(tf.random_uniform([n_output], -1.0, 1.0))
-
-sigmoided_hidden_layer = tf.sigmoid(tf.matmul(inputs, weights_1) + bias1)
-sigmoided_output_layer = tf.sigmoid(tf.matmul(sigmoided_hidden_layer, weights_2) + bias2)
-sigmoided_output_layer = tf.Print(sigmoided_output_layer, [sigmoided_output_layer], "Output Layer:")
-
-cost = tf.reduce_sum(tf.square(expected_output - sigmoided_output_layer))
-#cost = tf.reduce_mean(- expected_output * tf.log(sigmoided_output_layer) - (1-expected_output) * tf.log(1 - sigmoided_output_layer))
-optimizer = tf.train.AdamOptimizer(learning_rate).minimize(cost)
-
-init = tf.global_variables_initializer()
-
-with tf.Session() as sess:
-    sess.run(init)
-
-    for step in range(epochs):
-        sess.run(optimizer, feed_dict = {inputs: x_data, expected_output: y_data})
-        print(sess.run(cost, feed_dict = {inputs: x_data, expected_output: y_data}))
-
-    #print(sess.run([sigmoided_output_layer], feed_dict = {inputs: x_data, expected_output: y_data}))
-'''
-
-
 import tensorflow as tf
 import numpy as np
 import sys
 
 
-squattingData = np.genfromtxt(sys.path[0] + '\\tf-pose-estimation\\src\\trainingSquattingClean.csv', delimiter=',')
-standingData = np.genfromtxt(sys.path[0] + '\\tf-pose-estimation\\src\\trainingStandingClean.csv', delimiter=',')
+squattingData = np.genfromtxt(sys.path[0] + r'/tf-pose-estimation/src/trainingSquattingClean.csv', delimiter=',')
+standingData = np.genfromtxt(sys.path[0] + r'/tf-pose-estimation/src/trainingStandingClean.csv', delimiter=',')
 
 squattingDataExpected = np.ones((squattingData.shape[0], 1))
 standingDataExpected = np.zeros((standingData.shape[0], 1))
@@ -74,23 +13,32 @@ standingDataExpected = np.zeros((standingData.shape[0], 1))
 data_x = np.concatenate((squattingData , standingData), axis=0)
 data_y = np.concatenate((squattingDataExpected, standingDataExpected), axis=0)
 
+# Parameters 
+hm_epochs = 30
+learning_rate = 0.01
+
+
+# Network Parameters
+n_input_nodes = 36
 n_nodes_hl1 = 50
 n_nodes_hl2 = 50
+n_output_node = 1
+minWeight = -1.0
+maxWeight = 1.0
 
-n_classes = 1
 
-x = tf.placeholder('float', [None, 36])
-y = tf.placeholder('float')
+x = tf.placeholder('float', [None, n_input_nodes])
+y = tf.placeholder('float', [None, n_output_node])
 
 def neural_network_model(data):
-    hidden_1_layer = {'weights':tf.Variable(tf.random_normal([36, n_nodes_hl1])),
-                      'biases':tf.Variable(tf.random_normal([n_nodes_hl1]))}
+    hidden_1_layer = {'weights':tf.Variable(tf.random_uniform([n_input_nodes, n_nodes_hl1], minWeight, maxWeight)),
+                      'biases':tf.Variable(tf.random_uniform([n_nodes_hl1], minWeight, maxWeight))}
 
-    hidden_2_layer = {'weights':tf.Variable(tf.random_normal([n_nodes_hl1, n_nodes_hl2])),
-                      'biases':tf.Variable(tf.random_normal([n_nodes_hl2]))}
+    hidden_2_layer = {'weights':tf.Variable(tf.random_uniform([n_nodes_hl1, n_nodes_hl2], minWeight, maxWeight)),
+                      'biases':tf.Variable(tf.random_uniform([n_nodes_hl2], minWeight, maxWeight))}
 
-    output_layer = {'weights':tf.Variable(tf.random_normal([n_nodes_hl2, n_classes])),
-                    'biases':tf.Variable(tf.random_normal([n_classes])),}
+    output_layer = {'weights':tf.Variable(tf.random_uniform([n_nodes_hl2, n_output_node], minWeight, maxWeight)),
+                    'biases':tf.Variable(tf.random_uniform([n_output_node], minWeight, maxWeight))}
 
 
     l1 = tf.add(tf.matmul(data,hidden_1_layer['weights']), hidden_1_layer['biases'])
@@ -109,9 +57,7 @@ def train_neural_network(x):
     #cost = tf.reduce_mean( tf.nn.softmax_cross_entropy_with_logits(logits=prediction, labels=y) )
     cost = tf.reduce_sum(tf.square(y - prediction))
 
-    optimizer = tf.train.AdamOptimizer(0.01).minimize(cost)
-    
-    hm_epochs = 30
+    optimizer = tf.train.AdamOptimizer(learning_rate).minimize(cost)
 
     with tf.Session() as sess:
 
@@ -121,11 +67,8 @@ def train_neural_network(x):
             epoch_loss = 0
 
             for piece in range(len(data_x)):
-                #print(piece)
                 input_x =  [data_x[piece]]
                 expected_y = [data_y[piece]]
-                #print(input_x)
-                #print(expected_y)
                 _, c = sess.run([optimizer, cost], feed_dict={x: input_x, y: expected_y})
 
                 epoch_loss += c
@@ -136,7 +79,6 @@ def train_neural_network(x):
 
             my_acc = tf.reduce_sum(tf.cast(tf.equal(x, y), tf.float32))
             print(sess.run(my_acc, feed_dict={x: input_x, y: expected_y}))  # 1.0
-
 
 
 train_neural_network(x)
