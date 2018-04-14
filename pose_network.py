@@ -18,7 +18,7 @@ y_data = np.concatenate( (squattingData_y, standingData_y), axis=0)
 
 # Parameters
 learningRate = 0.1
-numSteps = 500
+numSteps = 5000
 batchSize = 128
 displayStep = 100
 
@@ -85,10 +85,14 @@ with tf.Session() as sess:
     sess.run(init)
 
     for step in range(1, numSteps+1):
-        sess.run(optimizer, feed_dict = {X: x_data, Y: y_data})
+        permutation=np.random.permutation(inputNodes)
+        permutation=permutation[0:batchSize]
+        batch=[x_data[permutation],y_data[permutation]]
+        # batch=[x_data,y_data]
+        sess.run(optimizer, feed_dict = {X: batch[0], Y: batch[1]})
 
         # calculate batch loss and accuracy
-        loss, acc = sess.run([lossOp, accurary], feed_dict={X: x_data, Y: y_data})
+        loss, acc = sess.run([lossOp, accurary], feed_dict={X: batch[0], Y: batch[1]})
 
         print("Step: " + str(step) + ", Data Loss " + "{:.4f}".format(loss) + ", Training accurary= " + "{:.3f}".format(acc) )
 
