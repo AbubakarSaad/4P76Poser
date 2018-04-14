@@ -82,6 +82,8 @@ n_nodes_hl1 = 50
 n_nodes_hl2 = 50
 
 n_output_node = 1
+hm_epochs = 30
+learning_rate = 0.01
 
 x = tf.placeholder('float', [None, 36])
 y = tf.placeholder('float', [None, n_output_node])
@@ -114,9 +116,7 @@ def train_neural_network(x):
     #cost = tf.reduce_mean( tf.nn.softmax_cross_entropy_with_logits(logits=prediction, labels=y) )
     cost = tf.reduce_sum(tf.square(y - prediction))
 
-    optimizer = tf.train.AdamOptimizer(0.01).minimize(cost)
-    
-    hm_epochs = 30
+    optimizer = tf.train.AdamOptimizer(learning_rate).minimize(cost)
 
     with tf.Session() as sess:
 
