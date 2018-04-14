@@ -19,10 +19,8 @@ data_x[data_x < 0] = 0
 # The combined data data for shuffling purposes.
 xy_data = np.concatenate((data_x, data_y), axis=1)
 
-# Parameters 
-hm_epochs = 30
-learning_rate = 0.01
-
+# The combined data data for shuffling purposes.
+xy_data = np.concatenate((data_x, data_y), axis=1)
 
 # Network Parameters
 n_input_nodes = 36
@@ -30,6 +28,8 @@ n_nodes_hl1 = 50
 n_nodes_hl2 = 50
 
 n_output_node = 1
+hm_epochs = 30
+learning_rate = 0.01
 minWeight = -1.0
 maxWeight = 1.0
 
@@ -49,12 +49,14 @@ def neural_network_model(data):
 
 
     l1 = tf.add(tf.matmul(data,hidden_1_layer['weights']), hidden_1_layer['biases'])
-    l1 = tf.nn.relu(l1)
+    l1 = tf.nn.sigmoid(l1)
 
     l2 = tf.add(tf.matmul(l1,hidden_2_layer['weights']), hidden_2_layer['biases'])
-    l2 = tf.nn.relu(l2)
+    l2 = tf.nn.sigmoid(l2)
 
     output = tf.matmul(l2,output_layer['weights']) + output_layer['biases']
+    output = tf.nn.sigmoid(output)
+    output = tf.Print(output, [output], "Output Layer: ")
 
     return output
 
@@ -73,6 +75,11 @@ def train_neural_network(x):
 
         for epoch in range(hm_epochs):
             epoch_loss = 0
+            
+            np.random.shuffle(xy_data)
+            data_x = xy_data[0:328, 0:36]
+            data_y = xy_data[0:328, 36]
+            data_y = np.resize(data_y, (328, 1))
 
             for piece in range(len(data_x)):
                 input_x =  [data_x[piece]]
@@ -80,8 +87,12 @@ def train_neural_network(x):
                 _, c = sess.run([optimizer, cost], feed_dict={x: input_x, y: expected_y})
                 epoch_loss += c
 
-            print('Epoch', epoch, 'completed out of',hm_epochs,'loss:',epoch_loss)
+            # print('Epoch', epoch, 'completed out of',hm_epochs,'loss:',epoch_loss)
 
+
+
+            my_acc = tf.reduce_sum(tf.cast(tf.equal(x, y), tf.float32))
+            # print(sess.run(my_acc, feed_dict={x: input_x, y: expected_y}))  # 1.0
 
 
 train_neural_network(x)
