@@ -75,7 +75,6 @@ data_y = np.concatenate((squattingDataExpected, standingDataExpected), axis=0)
 
 n_nodes_hl1 = 50
 n_nodes_hl2 = 50
-
 n_classes = 1
 
 x = tf.placeholder('float', [None, 36])
@@ -93,14 +92,15 @@ def neural_network_model(data):
 
 
     l1 = tf.add(tf.matmul(data,hidden_1_layer['weights']), hidden_1_layer['biases'])
-    l1 = tf.nn.relu(l1)
+    l1 = tf.nn.sigmoid(l1)
 
     l2 = tf.add(tf.matmul(l1,hidden_2_layer['weights']), hidden_2_layer['biases'])
-    l2 = tf.nn.relu(l2)
+    l2 = tf.nn.sigmoid(l2)
 
     output = tf.matmul(l2,output_layer['weights']) + output_layer['biases']
 
     return output
+
 
 def train_neural_network(x):
     prediction = neural_network_model(x)
@@ -120,21 +120,19 @@ def train_neural_network(x):
             epoch_loss = 0
 
             for piece in range(len(data_x)):
-                #print(piece)
                 input_x =  [data_x[piece]]
                 expected_y = [data_y[piece]]
-                #print(input_x)
-                #print(expected_y)
                 _, c = sess.run([optimizer, cost], feed_dict={x: input_x, y: expected_y})
-
                 epoch_loss += c
 
             print('Epoch', epoch, 'completed out of',hm_epochs,'loss:',epoch_loss)
 
 
 
-            my_acc = tf.reduce_sum(tf.cast(tf.equal(x, y), tf.float32))
-            print(sess.run(my_acc, feed_dict={x: input_x, y: expected_y}))  # 1.0
+        output = sess.run(tf.argmax(prediction,1),feed_dict={x: data_x})
+        print(output)
+        
+        # print(sess.run(my_acc, feed_dict={x: data_x}))
 
 
 
