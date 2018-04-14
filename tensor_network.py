@@ -86,12 +86,8 @@ def train_neural_network(x):
             for piece in range(len(data_x)):
                 input_x =  [data_x[piece]]
                 expected_y = [data_y[piece]]
-<<<<<<< HEAD
-                _, c = sess.run([optimizer, cost], feed_dict={x: input_x, y: expected_y})
-=======
                 _, c, predict = sess.run([optimizer, cost, prediction], feed_dict={x: input_x, y: expected_y})
 
->>>>>>> c229eb6ef7bdd1b4e75f733ed784117dcff52387
                 epoch_loss += c
                 # print(expected_y[0], predict[0])
                 # print('Epoch', epoch, 'completed out of',hm_epochs,'loss:',epoch_loss)
