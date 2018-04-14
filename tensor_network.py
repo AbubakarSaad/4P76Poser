@@ -75,8 +75,7 @@ def train_neural_network(x):
 
         for epoch in range(hm_epochs):
             epoch_loss = 0
-            accuracy_standing = 0
-            accuracy_squating = 0
+            accuracy = 0
             
             np.random.shuffle(xy_data)
             data_x = xy_data[0:328, 0:36]
@@ -92,12 +91,14 @@ def train_neural_network(x):
                 # print(expected_y[0], predict[0])
                 # print('Epoch', epoch, 'completed out of',hm_epochs,'loss:',epoch_loss)
                 if predict[0] > 0.500000:
-                    accuracy_squating += 1
+                    if (expected_y[0][0] == 1.0):
+                        accuracy += 1
                 elif predict[0] < 0.50000:
-                    accuracy_standing += 1
- 
-            print("Epoch: ", epoch, ", accuracy_squating: ", (accuracy_squating)/len(data_x))
-            print("Epoch: ", epoch, ", accuracy_standing: ", (accuracy_standing)/len(data_x))
+                    if (expected_y[0][0] == 0.0):
+                        accuracy += 1
+
+
+            print("Epoch: ", epoch, ", accuracy_standing: ", (accuracy/len(data_x)))
             my_acc = tf.reduce_sum(tf.cast(tf.equal(x, y), tf.float32))
             # print(sess.run(my_acc, feed_dict={x: input_x, y: expected_y}))  # 1.0
 
