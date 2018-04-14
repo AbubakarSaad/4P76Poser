@@ -48,7 +48,7 @@ bias = {
 
 # Create a model
 def neuralNet(data):
-    # print(data)
+    print(data.shape)
     # Hidden fully connected with 50 neuros
     layer1 = tf.add(tf.matmul(data, weights['h1']), bias['b1'])
 
@@ -85,7 +85,9 @@ with tf.Session() as sess:
     sess.run(init)
 
     for step in range(1, numSteps+1):
-        sess.run(optimizer, feed_dict = {X: x_data, Y: y_data})
+        data_x, data_y = x_data[step], y_data[step]
+
+        sess.run(optimizer, feed_dict = {X: data_x, Y: data_y})
 
         # calculate batch loss and accuracy
         loss, acc = sess.run([lossOp, accurary], feed_dict={X: x_data, Y: y_data})
