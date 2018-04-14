@@ -49,7 +49,7 @@ def neural_network_model(data):
 
     output = tf.matmul(l2,output_layer['weights']) + output_layer['biases']
     output = tf.nn.sigmoid(output)
-    # output = tf.Print(output, [output], "Output Layer: ")
+    output = tf.Print(output, [output], "Output Layer: ")
 
     return output
 
@@ -80,7 +80,7 @@ def train_neural_network(x):
 
                 epoch_loss += c
 
-            print('Epoch', epoch, 'completed out of',hm_epochs,'loss:',epoch_loss)
+            # print('Epoch', epoch, 'completed out of',hm_epochs,'loss:',epoch_loss)
 
 
 
