@@ -14,7 +14,6 @@ standingDataExpected = np.zeros((standingData.shape[0], 1))
 x_data = np.concatenate((squattingData , standingData), axis=0)
 y_data = np.concatenate((squattingDataExpected, standingDataExpected), axis=0)
 
-
 print(x_data.shape)
 print(y_data.shape)
 
