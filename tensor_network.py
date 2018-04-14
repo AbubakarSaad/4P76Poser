@@ -73,6 +73,11 @@ standingDataExpected = np.zeros((standingData.shape[0], 1))
 data_x = np.concatenate((squattingData , standingData), axis=0)
 data_y = np.concatenate((squattingDataExpected, standingDataExpected), axis=0)
 
+print(data_x)
+# replace -1 with 0
+data_x[data_x < 0] = 0
+print(data_x)
+
 # The combined data data for shuffling purposes.
 xy_data = np.concatenate((data_x, data_y), axis=1)
 
@@ -105,7 +110,7 @@ def neural_network_model(data):
     l2 = tf.nn.sigmoid(l2)
 
     output = tf.matmul(l2,output_layer['weights']) + output_layer['biases']
-    output = tf.Print(output, [output], "Output Layer:")
+    #output = tf.Print(output, [output], "Output Layer:")
 
     return output
 
