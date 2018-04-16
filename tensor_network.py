@@ -2,7 +2,11 @@ import tensorflow as tf
 import numpy as np
 import sys
 import math
-# import dataScriptGenerator
+import importlib
+dataGenerator = importlib.import_module('tf-pose-estimation.src.dataScriptGenerator', None)
+
+dataGenerator.dataScriptGenerator()
+
 
 np.set_printoptions(threshold=np.nan)
 
