@@ -2,12 +2,29 @@ import tensorflow as tf
 import numpy as np
 import sys
 import math
-import dataScriptGenerator
+import importlib
+
+sys.path.insert(0, sys.path[0] + "\\tf-pose-estimation\\src")
+print (sys.path)
+
+dataGenerator = importlib.import_module('tf-pose-estimation.src.dataScriptGenerator', None)
 
 np.set_printoptions(threshold=np.nan)
 
-squattingData = np.genfromtxt(sys.path[0] + r'/tf-pose-estimation/src/trainingSquattingClean.csv', delimiter=',')
-standingData = np.genfromtxt(sys.path[0] + r'/tf-pose-estimation/src/trainingStandingClean.csv', delimiter=',')
+# Network Parameters
+n_input_nodes = 36
+n_nodes_hl1 = 30
+n_nodes_hl2 = 30
+n_output_node = 2
+hm_epochs = 50
+learning_rate = 0.01
+minWeight = -1.0
+maxWeight = 1.0
+trainingPercent = 0.7
+testingPercent = 0.3
+
+squattingData = np.genfromtxt(sys.path[0] + '\\trainingSquattingClean.csv', delimiter=',')
+standingData = np.genfromtxt(sys.path[0] + '\\trainingStandingClean.csv', delimiter=',')
 
 squattingDataExpected = np.tile([1,0], (squattingData.shape[0],1))
 standingDataExpected = np.tile([0,1], (standingData.shape[0],1))
@@ -21,8 +38,8 @@ data_y = np.concatenate((squattingDataExpected, standingDataExpected), axis=0)
 data_x[data_x < 0] = 0
 
 # The specifc size for each dataset
-trainingDataSize = math.floor(data_x.shape[0] * 0.7)
-testingDataSize = math.ceil(data_x.shape[0] * 0.3) + trainingDataSize
+trainingDataSize = math.floor(data_x.shape[0] * trainingPercent)
+testingDataSize = math.ceil(data_x.shape[0] * testingPercent) + trainingDataSize
 
 # The training data 
 trainingData = data_x[0 : trainingDataSize]
@@ -37,17 +54,6 @@ xy_dataTraining = np.concatenate((trainingData, trainingDataClass), axis=1)
 xy_dataTesting = np.concatenate((testingData, testingDataClass), axis=1)
 
 #print(xy_dataTraining)
-
-# Network Parameters
-n_input_nodes = 36
-n_nodes_hl1 = 50
-n_nodes_hl2 = 50
-n_output_node = 2
-hm_epochs = 100
-learning_rate = 0.01
-minWeight = -1.0
-maxWeight = 1.0
-
 
 x = tf.placeholder('float', [None, n_input_nodes])
 y = tf.placeholder('float', [None, n_output_node])
@@ -136,14 +142,16 @@ def train_neural_network(x):
         # AD HOC IMAGE TESTING:
 
         cont = "Y"
-        while(cont == "Y" or cont = "y"):
+        while(cont == "Y" or cont == "y"):
             # - Call data script generator on new image and generate csv
-            dataScriptGenerator()
-
+            dataGenerator.dataScriptGenerator()
             # - Pass new csv data into network and print out prediction
-            data_x = = np.genfromtxt(sys.path[0] + r'/tf-pose-estimation/src/aClean.csv', delimiter=',')
-            
+            data_x = np.genfromtxt(sys.path[0] + '\\aClean.csv', delimiter=',')
+            if (len(data_x)):
+                data_x = np.resize(data_x, (1,36))
+
             for piece in range(len(data_x)):
+                
                 input_x =  [data_x[piece]]
                 predict = sess.run([prediction], feed_dict={x: input_x})
 

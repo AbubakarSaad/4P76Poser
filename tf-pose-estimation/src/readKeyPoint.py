@@ -1,5 +1,4 @@
-import csv
-import os
+import csv, os, sys
 
 myData = []
  
@@ -46,7 +45,7 @@ def normalizeData():
 
 def storeData(numHumans, currentHuman):
     global myData
-    myFile = open('a.csv', 'a')
+    myFile = open(sys.path[0] + '\\a.csv', 'a')
 
     if (numHumans == 0):
         for i in range(36):
