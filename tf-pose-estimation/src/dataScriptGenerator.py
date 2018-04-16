@@ -22,8 +22,8 @@ ch.setLevel(logging.DEBUG)
 formatter = logging.Formatter('[%(asctime)s] [%(name)s] [%(levelname)s] %(message)s')
 ch.setFormatter(formatter)
 logger.addHandler(ch)
-outputfile = 'trainingSquatting.csv'
-cleanedOutputfile = 'trainingSquattingClean.csv'
+outputfile = 'trainingStanding.csv'
+cleanedOutputfile = 'trainingStandingClean.csv'
 
 def dataCleanup():
     print ("  CLEANING DATA...")
@@ -65,7 +65,7 @@ if __name__ == '__main__':
 
     w, h = model_wh(args.resolution)
     e = TfPoseEstimator(get_graph_path(args.model), target_size=(w, h))
-    directory_in_str = sys.path[0] + "\\..\\images\\Squattingpeople\\"
+    directory_in_str = sys.path[0] + "\\..\\images\\Standingpeople\\"
 
     try:
         os.remove(outputfile)
