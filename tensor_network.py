@@ -13,6 +13,12 @@ standingDataExpected = np.zeros((standingData.shape[0], 1))
 data_x = np.concatenate((squattingData , standingData), axis=0)
 data_y = np.concatenate((squattingDataExpected, standingDataExpected), axis=0)
 
+# replace -1 with 0
+data_x[data_x < 0] = 0
+
+# The combined data data for shuffling purposes.
+xy_data = np.concatenate((data_x, data_y), axis=1)
+
 # The combined data data for shuffling purposes.
 xy_data = np.concatenate((data_x, data_y), axis=1)
 
@@ -20,6 +26,7 @@ xy_data = np.concatenate((data_x, data_y), axis=1)
 n_input_nodes = 36
 n_nodes_hl1 = 50
 n_nodes_hl2 = 50
+
 n_output_node = 1
 hm_epochs = 100
 learning_rate = 0.01
@@ -53,6 +60,7 @@ def neural_network_model(data):
 
     return output
 
+
 def train_neural_network(x):
     prediction = neural_network_model(x)
 
@@ -67,8 +75,7 @@ def train_neural_network(x):
 
         for epoch in range(hm_epochs):
             epoch_loss = 0
-            accuracy_standing = 0
-            accuracy_squating = 0
+            accuracy = 0
             
             np.random.shuffle(xy_data)
             data_x = xy_data[0:328, 0:36]
@@ -83,17 +90,15 @@ def train_neural_network(x):
                 epoch_loss += c
                 # print(expected_y[0], predict[0])
                 # print('Epoch', epoch, 'completed out of',hm_epochs,'loss:',epoch_loss)
-                if predict[0] > 0.500000 and expected_y[0] == 1:
-                    accuracy_squating += 1
-                elif predict[0] < 0.50000 and expected_y[0] == 0:
-                    accuracy_standing += 1
- 
-            # print("Epoch: ", epoch, ", accuracy_squating: ", (accuracy_squating)/len(data_x))
-            # print("Epoch: ", epoch, ", accuracy_standing: ", (accuracy_standing)/len(data_x))
+                if predict[0] > 0.500000:
+                    if (expected_y[0][0] == 1.0):
+                        accuracy += 1
+                elif predict[0] < 0.50000:
+                    if (expected_y[0][0] == 0.0):
+                        accuracy += 1
 
-            accuracy = accuracy_squating + accuracy_standing
-            print("accuracy: ", accuracy/(len(data_x)))
-            # print("Epoch: ", epoch, ", error loss: ", epoch_loss)
+
+            print("Epoch: ", epoch, ", accuracy_standing: ", (accuracy/len(data_x)))
             my_acc = tf.reduce_sum(tf.cast(tf.equal(x, y), tf.float32))
             # print(sess.run(my_acc, feed_dict={x: input_x, y: expected_y}))  # 1.0
 
