@@ -4,7 +4,7 @@ import sys
 import math
 import importlib
 
-sys.path.insert(0, sys.path[0] + "\\tf-pose-estimation\\src")
+sys.path.insert(0, sys.path[0] + r"/tf-pose-estimation/src")
 print (sys.path)
 
 dataGenerator = importlib.import_module('tf-pose-estimation.src.dataScriptGenerator', None)
@@ -23,8 +23,8 @@ maxWeight = 1.0
 trainingPercent = 0.7
 testingPercent = 0.3
 
-squattingData = np.genfromtxt(sys.path[0] + '\\trainingSquattingClean.csv', delimiter=',')
-standingData = np.genfromtxt(sys.path[0] + '\\trainingStandingClean.csv', delimiter=',')
+squattingData = np.genfromtxt(sys.path[0] + r'/trainingSquattingClean.csv', delimiter=',')
+standingData = np.genfromtxt(sys.path[0] + r'/trainingStandingClean.csv', delimiter=',')
 
 squattingDataExpected = np.tile([1,0], (squattingData.shape[0],1))
 standingDataExpected = np.tile([0,1], (standingData.shape[0],1))
@@ -139,7 +139,7 @@ def train_neural_network(x):
         print("Testing Accuracy on Entire Set:  ", (accuracy/len(data_x)))
 
 
-        # AD HOC IMAGE TESTING:
+        # AD HOC IMAGE TESTING FROM FOLDER:
 
         cont = "Y"
         while(cont == "Y" or cont == "y"):
@@ -158,6 +158,9 @@ def train_neural_network(x):
                 print("Network Output: " , predict[0])
 
             cont = input("Continue? (Y or N): ")
+
+
+        # LIVE IMAGE CLASSIFICATION
 
 
 train_neural_network(x)
