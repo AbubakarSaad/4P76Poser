@@ -2,6 +2,7 @@ import tensorflow as tf
 import numpy as np
 import sys
 import math
+# import dataScriptGenerator
 
 np.set_printoptions(threshold=np.nan)
 
@@ -10,8 +11,6 @@ standingData = np.genfromtxt(sys.path[0] + r'/tf-pose-estimation/src/trainingSta
 
 squattingDataExpected = np.tile([1,0], (squattingData.shape[0],1))
 standingDataExpected = np.tile([0,1], (standingData.shape[0],1))
-
-print(standingDataExpected)
 
 
 # Sample Dataset
@@ -37,11 +36,13 @@ testingDataClass = data_y[trainingDataSize : testingDataSize]
 xy_dataTraining = np.concatenate((trainingData, trainingDataClass), axis=1)
 xy_dataTesting = np.concatenate((testingData, testingDataClass), axis=1)
 
+#print(xy_dataTraining)
+
 # Network Parameters
 n_input_nodes = 36
 n_nodes_hl1 = 50
 n_nodes_hl2 = 50
-n_output_node = 1
+n_output_node = 2
 hm_epochs = 100
 learning_rate = 0.01
 minWeight = -1.0
@@ -74,6 +75,7 @@ def neural_network_model(data):
 
     return output
 
+
 def train_neural_network(x):
     prediction = neural_network_model(x)
 
@@ -92,8 +94,14 @@ def train_neural_network(x):
             
             np.random.shuffle(xy_dataTraining)
             data_x = xy_dataTraining[0:trainingDataSize, 0:36]
-            data_y = xy_dataTraining[0:trainingDataSize, 36]
-            data_y = np.resize(data_y, (328, 1))
+            data_y = xy_dataTraining[0:trainingDataSize, 36:38]
+
+            # print(data_y)
+
+            data_y = np.resize(data_y, (328, 2))
+
+            # print(data_y[0])
+
 
             for piece in range(len(data_x)):
                 input_x =  [data_x[piece]]
@@ -101,99 +109,56 @@ def train_neural_network(x):
                 _, c, predict = sess.run([optimizer, cost, prediction], feed_dict={x: input_x, y: expected_y})
 
                 epoch_loss += c
-                # print(expected_y[0], predict[0])
                 # print('Epoch', epoch, 'completed out of',hm_epochs,'loss:',epoch_loss)
-                if predict[0] > 0.500000:
-                    if (expected_y[0][0] == 1.0):
-                        accuracy += 1
-                elif predict[0] < 0.50000:
-                    if (expected_y[0][0] == 0.0):
-                        accuracy += 1
+                # print(predict[0], " " , expected_y[0])
+                if np.argmax(predict[0]) == np.argmax(expected_y[0]):
+                    accuracy += 1
 
 
             print("Epoch: ", epoch, ", accuracy_standing: ", (accuracy/len(data_x)))
-            my_acc = tf.reduce_sum(tf.cast(tf.equal(x, y), tf.float32))
-            # print(sess.run(my_acc, feed_dict={x: input_x, y: expected_y}))  # 1.0
+
+
+
+        # TESTING OUR NETWORK, SAME SESSION
+
+        accuracy = 0
+
+        data_x = xy_dataTesting[0:testingDataSize, 0:36]
+        data_y = xy_dataTesting[0:testingDataSize, 36:38]
+        
+        for piece in range(len(data_x)):
+            input_x =  [data_x[piece]]
+            expected_y = [data_y[piece]]
+            predict = sess.run([prediction], feed_dict={x: input_x, y: expected_y})
+
+            print(predict[0], " " , expected_y[0],2)
+            if np.argmax(predict[0]) == np.argmax(expected_y[0]):
+                accuracy += 1
+
+        print("Testing Accuracy on Entire Set:  ", (accuracy/len(data_x)))
+
+
+        # Input single picture into network:
+
+        # - Call data script generator on new image
+        # dataGeneration()
+        # - Pass new results into network and get prediction
+
+        # accuracy = 0
+
+        # data_x = xy_dataTesting[0:testingDataSize, 0:36]
+        # data_y = xy_dataTesting[0:testingDataSize, 36:38]
+        
+        # for piece in range(len(data_x)):
+        #     input_x =  [data_x[piece]]
+        #     expected_y = [data_y[piece]]
+        #     predict = sess.run([prediction], feed_dict={x: input_x, y: expected_y})
+
+        #     print(predict[0], " " , expected_y[0],2)
+        #     if np.argmax(predict[0]) == np.argmax(expected_y[0]):
+        #         accuracy += 1
+
+        # print("Testing Accuracy on Entire Set:  ", (accuracy/len(data_x)))
 
 
 train_neural_network(x)
-
-
-
-'''
-CODE IM BASING MY STUFF ON
-
-import tensorflow as tf
-from tensorflow.examples.tutorials.mnist import input_data
-mnist = input_data.read_data_sets("/tmp/data/", one_hot = True)
-
-n_nodes_hl1 = 200
-n_nodes_hl2 = 200
-n_nodes_hl3 = 200
-
-n_classes = 10
-batch_size = 100
-
-x = tf.placeholder('float', [None, 784])
-y = tf.placeholder('float')
-
-def neural_network_model(data):
-    hidden_1_layer = {'weights':tf.Variable(tf.random_normal([784, n_nodes_hl1])),
-                      'biases':tf.Variable(tf.random_normal([n_nodes_hl1]))}
-
-    hidden_2_layer = {'weights':tf.Variable(tf.random_normal([n_nodes_hl1, n_nodes_hl2])),
-                      'biases':tf.Variable(tf.random_normal([n_nodes_hl2]))}
-
-    hidden_3_layer = {'weights':tf.Variable(tf.random_normal([n_nodes_hl2, n_nodes_hl3])),
-                      'biases':tf.Variable(tf.random_normal([n_nodes_hl3]))}
-
-    output_layer = {'weights':tf.Variable(tf.random_normal([n_nodes_hl3, n_classes])),
-                    'biases':tf.Variable(tf.random_normal([n_classes])),}
-
-
-    l1 = tf.add(tf.matmul(data,hidden_1_layer['weights']), hidden_1_layer['biases'])
-    l1 = tf.nn.relu(l1)
-
-    l2 = tf.add(tf.matmul(l1,hidden_2_layer['weights']), hidden_2_layer['biases'])
-    l2 = tf.nn.relu(l2)
-
-    l3 = tf.add(tf.matmul(l2,hidden_3_layer['weights']), hidden_3_layer['biases'])
-    l3 = tf.nn.relu(l3)
-
-    output = tf.matmul(l3,output_layer['weights']) + output_layer['biases']
-
-    return output
-
-def train_neural_network(x):
-    prediction = neural_network_model(x)
-    # OLD VERSION:
-    #cost = tf.reduce_mean( tf.nn.softmax_cross_entropy_with_logits(prediction,y) )
-    # NEW:
-    cost = tf.reduce_mean( tf.nn.softmax_cross_entropy_with_logits(logits=prediction, labels=y) )
-    optimizer = tf.train.AdamOptimizer().minimize(cost)
-    
-    hm_epochs = 10
-    with tf.Session() as sess:
-        # OLD:
-        #sess.run(tf.initialize_all_variables())
-        # NEW:
-        sess.run(tf.global_variables_initializer())
-
-        for epoch in range(hm_epochs):
-            epoch_loss = 0
-            for _ in range(int(mnist.train.num_examples/batch_size)):
-                epoch_x, epoch_y = mnist.train.next_batch(batch_size)
-                _, c = sess.run([optimizer, cost], feed_dict={x: epoch_x, y: epoch_y})
-                epoch_loss += c
-
-            print('Epoch', epoch, 'completed out of',hm_epochs,'loss:',epoch_loss)
-
-        correct = tf.equal(tf.argmax(prediction, 1), tf.argmax(y, 1))
-
-        accuracy = tf.reduce_mean(tf.cast(correct, 'float'))
-        print('Accuracy:',accuracy.eval({x:mnist.test.images, y:mnist.test.labels}))
-
-
-train_neural_network(x)
-
-'''
