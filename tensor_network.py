@@ -6,6 +6,18 @@ import math
 
 np.set_printoptions(threshold=np.nan)
 
+# Network Parameters
+n_input_nodes = 36
+n_nodes_hl1 = 50
+n_nodes_hl2 = 50
+n_output_node = 2
+hm_epochs = 100
+learning_rate = 0.01
+minWeight = -1.0
+maxWeight = 1.0
+trainingPercent = 0.7
+testingPercent = 0.3
+
 squattingData = np.genfromtxt(sys.path[0] + r'/tf-pose-estimation/src/trainingSquattingClean.csv', delimiter=',')
 standingData = np.genfromtxt(sys.path[0] + r'/tf-pose-estimation/src/trainingStandingClean.csv', delimiter=',')
 
@@ -21,8 +33,8 @@ data_y = np.concatenate((squattingDataExpected, standingDataExpected), axis=0)
 data_x[data_x < 0] = 0
 
 # The specifc size for each dataset
-trainingDataSize = math.floor(data_x.shape[0] * 0.7)
-testingDataSize = math.ceil(data_x.shape[0] * 0.3) + trainingDataSize
+trainingDataSize = math.floor(data_x.shape[0] * trainingPercent)
+testingDataSize = math.ceil(data_x.shape[0] * testingPercent) + trainingDataSize
 
 # The training data 
 trainingData = data_x[0 : trainingDataSize]
@@ -37,17 +49,6 @@ xy_dataTraining = np.concatenate((trainingData, trainingDataClass), axis=1)
 xy_dataTesting = np.concatenate((testingData, testingDataClass), axis=1)
 
 #print(xy_dataTraining)
-
-# Network Parameters
-n_input_nodes = 36
-n_nodes_hl1 = 50
-n_nodes_hl2 = 50
-n_output_node = 2
-hm_epochs = 100
-learning_rate = 0.01
-minWeight = -1.0
-maxWeight = 1.0
-
 
 x = tf.placeholder('float', [None, n_input_nodes])
 y = tf.placeholder('float', [None, n_output_node])
