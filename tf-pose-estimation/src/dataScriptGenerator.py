@@ -40,6 +40,7 @@ class dataScriptGenerator(object):
 
         try:
             os.remove(outputfile)
+            os.remove(cleanedOutputfile)
         except OSError:
             pass
 
