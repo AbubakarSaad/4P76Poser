@@ -16,8 +16,8 @@ n_input_nodes = 36
 n_nodes_hl1 = 15
 n_nodes_hl2 = 20
 n_output_node = 2
-hm_epochs = 200
-learning_rate = 0.01
+hm_epochs = 100
+learning_rate = 0.02
 minWeight = -1.0
 maxWeight = 1.0
 trainingPercent = 0.7
@@ -163,15 +163,21 @@ def train_neural_network(x):
         while(cont == "Y" or cont == "y"):
             # - Call data script generator on new image and generate csv
             dataGenerator.dataScriptGenerator()
+            
             # - Pass new csv data into network and print out prediction
             data_x = np.genfromtxt(sys.path[0] + '\\aClean.csv', delimiter=',')
+            print(data_x)
             if (len(data_x)):
                 data_x = np.resize(data_x, (1,36))
 
             for piece in range(len(data_x)):
                 
                 input_x =  [data_x[piece]]
-                predict = sess.run([prediction], feed_dict={x: input_x})
+                predict = sess.run([prediction], feed_dict={
+                        x: input_x, 
+                        keep_probL1: 1.0, 
+                        keep_probL2: 1.0
+                    })
 
                 print("Network Output: " , predict[0])
 
