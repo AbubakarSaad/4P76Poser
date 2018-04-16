@@ -3,8 +3,10 @@ import numpy as np
 import sys
 import math
 import importlib
+import real_time
 
-sys.path.insert(0, sys.path[0] + "\\tf-pose-estimation\\src")
+
+sys.path.insert(0, sys.path[0] + r"/tf-pose-estimation/src")
 print (sys.path)
 
 dataGenerator = importlib.import_module('tf-pose-estimation.src.dataScriptGenerator', None)
@@ -25,8 +27,8 @@ testingPercent = 0.3
 dropOutRateL1 = 0.5
 dropOutRateL2 = 0.5
 
-squattingData = np.genfromtxt(sys.path[0] + '\\trainingSquattingClean.csv', delimiter=',')
-standingData = np.genfromtxt(sys.path[0] + '\\trainingStandingClean.csv', delimiter=',')
+squattingData = np.genfromtxt(sys.path[0] + r'/trainingSquattingClean.csv', delimiter=',')
+standingData = np.genfromtxt(sys.path[0] + r'/trainingStandingClean.csv', delimiter=',')
 
 squattingDataExpected = np.tile([1,0], (squattingData.shape[0],1))
 standingDataExpected = np.tile([0,1], (standingData.shape[0],1))
@@ -162,6 +164,7 @@ def train_neural_network(x):
         cont = "Y"
         while(cont == "Y" or cont == "y"):
             # - Call data script generator on new image and generate csv
+            real_time.realTimeCapture()
             dataGenerator.dataScriptGenerator()
             
             # - Pass new csv data into network and print out prediction
