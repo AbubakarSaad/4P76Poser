@@ -8,22 +8,23 @@ np.set_printoptions(threshold=np.nan)
 
 # Network Parameters
 n_input_nodes = 36
-n_nodes_hl1 = 50
-n_nodes_hl2 = 50
+n_nodes_hl1 = 15
+n_nodes_hl2 = 20
 n_output_node = 2
-hm_epochs = 100
-learning_rate = 0.01
+hm_epochs = 200
+learning_rate = 0.02
 minWeight = -1.0
 maxWeight = 1.0
 trainingPercent = 0.7
 testingPercent = 0.3
+dropOutRateL1 = 0.5
+dropOutRateL2 = 0.5
 
 squattingData = np.genfromtxt(sys.path[0] + r'/tf-pose-estimation/src/trainingSquattingClean.csv', delimiter=',')
 standingData = np.genfromtxt(sys.path[0] + r'/tf-pose-estimation/src/trainingStandingClean.csv', delimiter=',')
 
 squattingDataExpected = np.tile([1,0], (squattingData.shape[0],1))
 standingDataExpected = np.tile([0,1], (standingData.shape[0],1))
-
 
 # Sample Dataset
 data_x = np.concatenate((squattingData , standingData), axis=0)
@@ -52,6 +53,8 @@ xy_dataTesting = np.concatenate((testingData, testingDataClass), axis=1)
 
 x = tf.placeholder('float', [None, n_input_nodes])
 y = tf.placeholder('float', [None, n_output_node])
+keep_probL1 = tf.placeholder(tf.float32)
+keep_probL2 = tf.placeholder(tf.float32)
 
 def neural_network_model(data):
     hidden_1_layer = {'weights':tf.Variable(tf.random_uniform([n_input_nodes, n_nodes_hl1], minWeight, maxWeight)),
@@ -67,10 +70,15 @@ def neural_network_model(data):
     l1 = tf.add(tf.matmul(data,hidden_1_layer['weights']), hidden_1_layer['biases'])
     l1 = tf.nn.sigmoid(l1)
 
-    l2 = tf.add(tf.matmul(l1,hidden_2_layer['weights']), hidden_2_layer['biases'])
-    l2 = tf.nn.sigmoid(l2)
+    # Apply dropout to the first layer.
+    dropOutL1 = tf.nn.dropout(l1, keep_probL1)
 
-    output = tf.matmul(l2,output_layer['weights']) + output_layer['biases']
+    l2 = tf.add(tf.matmul(dropOutL1, hidden_2_layer['weights']), hidden_2_layer['biases'])
+    l2 = tf.nn.sigmoid(l2)
+    
+    dropOutL2 = tf.nn.dropout(l2, keep_probL2)
+
+    output = tf.matmul(dropOutL2, output_layer['weights']) + output_layer['biases']
     output = tf.nn.sigmoid(output)
     # output = tf.Print(output, [output], "Output Layer: ")
 
@@ -107,7 +115,12 @@ def train_neural_network(x):
             for piece in range(len(data_x)):
                 input_x =  [data_x[piece]]
                 expected_y = [data_y[piece]]
-                _, c, predict = sess.run([optimizer, cost, prediction], feed_dict={x: input_x, y: expected_y})
+                _, c, predict = sess.run([optimizer, cost, prediction], feed_dict={
+                        x: input_x, 
+                        y: expected_y, 
+                        keep_probL1: dropOutRateL1,
+                        keep_probL2: dropOutRateL2
+                    })
 
                 epoch_loss += c
                 # print('Epoch', epoch, 'completed out of',hm_epochs,'loss:',epoch_loss)
@@ -130,9 +143,14 @@ def train_neural_network(x):
         for piece in range(len(data_x)):
             input_x =  [data_x[piece]]
             expected_y = [data_y[piece]]
-            predict = sess.run([prediction], feed_dict={x: input_x, y: expected_y})
+            predict = sess.run([prediction], feed_dict={
+                    x: input_x, 
+                    y: expected_y, 
+                    keep_probL1: 1.0,
+                    keep_probL2: 1.0
+                })
 
-            print(predict[0], " " , expected_y[0],2)
+            # print(predict[0], " " , expected_y[0],2)
             if np.argmax(predict[0]) == np.argmax(expected_y[0]):
                 accuracy += 1
 
