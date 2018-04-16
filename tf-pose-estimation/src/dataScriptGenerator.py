@@ -22,8 +22,8 @@ ch.setLevel(logging.DEBUG)
 formatter = logging.Formatter('[%(asctime)s] [%(name)s] [%(levelname)s] %(message)s')
 ch.setFormatter(formatter)
 logger.addHandler(ch)
-outputfile = 'trainingStanding.csv'
-cleanedOutputfile = 'trainingStandingClean.csv'
+outputfile = 'a.csv'
+cleanedOutputfile = 'aClean.csv'
 
 def dataCleanup():
     print ("  CLEANING DATA...")
@@ -54,9 +54,7 @@ def dataCleanup():
     cleanKeypointData.close()
 
 if __name__ == '__main__':
-
     parser = argparse.ArgumentParser(description='tf-pose-estimation run')
-    # parser.add_argument('--image', type=str, default='./images/01cfe37e64591a6069862176304347df--stay-at-home-mom-squat-exercise.jpg')
     parser.add_argument('--resolution', type=str, default='432x368', help='network input resolution. default=432x368')
     parser.add_argument('--model', type=str, default='mobilenet_thin', help='cmu / mobilenet_thin')
     parser.add_argument('--scales', type=str, default='[None]', help='for multiple scales, eg. [1.0, (1.1, 0.05)]')
@@ -65,7 +63,7 @@ if __name__ == '__main__':
 
     w, h = model_wh(args.resolution)
     e = TfPoseEstimator(get_graph_path(args.model), target_size=(w, h))
-    directory_in_str = sys.path[0] + "\\..\\images\\Standingpeople\\"
+    directory_in_str = sys.path[0] + "\\..\\images\\OurTest\\"
 
     try:
         os.remove(outputfile)
