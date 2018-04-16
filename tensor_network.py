@@ -17,7 +17,7 @@ n_nodes_hl1 = 15
 n_nodes_hl2 = 20
 n_output_node = 2
 hm_epochs = 200
-learning_rate = 0.02
+learning_rate = 0.01
 minWeight = -1.0
 maxWeight = 1.0
 trainingPercent = 0.7
@@ -157,25 +157,25 @@ def train_neural_network(x):
         print("Testing Accuracy on Entire Set:  ", (accuracy/len(data_x)))
 
 
-        # # AD HOC IMAGE TESTING:
+        # AD HOC IMAGE TESTING:
 
-        # cont = "Y"
-        # while(cont == "Y" or cont == "y"):
-        #     # - Call data script generator on new image and generate csv
-        #     dataGenerator.dataScriptGenerator()
-        #     # - Pass new csv data into network and print out prediction
-        #     data_x = np.genfromtxt(sys.path[0] + '\\aClean.csv', delimiter=',')
-        #     if (len(data_x)):
-        #         data_x = np.resize(data_x, (1,36))
+        cont = "Y"
+        while(cont == "Y" or cont == "y"):
+            # - Call data script generator on new image and generate csv
+            dataGenerator.dataScriptGenerator()
+            # - Pass new csv data into network and print out prediction
+            data_x = np.genfromtxt(sys.path[0] + '\\aClean.csv', delimiter=',')
+            if (len(data_x)):
+                data_x = np.resize(data_x, (1,36))
 
-        #     for piece in range(len(data_x)):
+            for piece in range(len(data_x)):
                 
-        #         input_x =  [data_x[piece]]
-        #         predict = sess.run([prediction], feed_dict={x: input_x})
+                input_x =  [data_x[piece]]
+                predict = sess.run([prediction], feed_dict={x: input_x})
 
-        #         print("Network Output: " , predict[0])
+                print("Network Output: " , predict[0])
 
-        #     cont = input("Continue? (Y or N): ")
+            cont = input("Continue? (Y or N): ")
 
 
 train_neural_network(x)
