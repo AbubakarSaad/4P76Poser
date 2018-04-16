@@ -8,8 +8,11 @@ np.set_printoptions(threshold=np.nan)
 squattingData = np.genfromtxt(sys.path[0] + r'/tf-pose-estimation/src/trainingSquattingClean.csv', delimiter=',')
 standingData = np.genfromtxt(sys.path[0] + r'/tf-pose-estimation/src/trainingStandingClean.csv', delimiter=',')
 
-squattingDataExpected = np.ones((squattingData.shape[0], 1))
-standingDataExpected = np.zeros((standingData.shape[0], 1))
+squattingDataExpected = np.tile([1,0], (squattingData.shape[0],1))
+standingDataExpected = np.tile([0,1], (standingData.shape[0],1))
+
+print(standingDataExpected)
+
 
 # Sample Dataset
 data_x = np.concatenate((squattingData , standingData), axis=0)
