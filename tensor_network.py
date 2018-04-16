@@ -83,13 +83,17 @@ def train_neural_network(x):
                 epoch_loss += c
                 # print(expected_y[0], predict[0])
                 # print('Epoch', epoch, 'completed out of',hm_epochs,'loss:',epoch_loss)
-                if predict[0] > 0.500000:
+                if predict[0] > 0.500000 and expected_y[0] == 1:
                     accuracy_squating += 1
-                elif predict[0] < 0.50000:
+                elif predict[0] < 0.50000 and expected_y[0] == 0:
                     accuracy_standing += 1
  
-            print("Epoch: ", epoch, ", accuracy_squating: ", (accuracy_squating)/len(data_x))
-            print("Epoch: ", epoch, ", accuracy_standing: ", (accuracy_standing)/len(data_x))
+            # print("Epoch: ", epoch, ", accuracy_squating: ", (accuracy_squating)/len(data_x))
+            # print("Epoch: ", epoch, ", accuracy_standing: ", (accuracy_standing)/len(data_x))
+
+            accuracy = accuracy_squating + accuracy_standing
+            print("accuracy: ", accuracy/(len(data_x)))
+            # print("Epoch: ", epoch, ", error loss: ", epoch_loss)
             my_acc = tf.reduce_sum(tf.cast(tf.equal(x, y), tf.float32))
             # print(sess.run(my_acc, feed_dict={x: input_x, y: expected_y}))  # 1.0
 
