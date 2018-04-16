@@ -2,7 +2,7 @@ import tensorflow as tf
 import numpy as np
 import sys
 import math
-# import dataScriptGenerator
+import dataScriptGenerator
 
 np.set_printoptions(threshold=np.nan)
 
@@ -79,12 +79,14 @@ def neural_network_model(data):
 def train_neural_network(x):
     prediction = neural_network_model(x)
 
-    #cost = tf.reduce_mean( tf.nn.softmax_cross_entropy_with_logits(logits=prediction, labels=y) )
     cost = tf.reduce_sum(tf.square(y - prediction))
 
     optimizer = tf.train.AdamOptimizer(learning_rate).minimize(cost)
 
+
     with tf.Session() as sess:
+
+        # TRAINING FUNCTIONALITY
 
         sess.run(tf.global_variables_initializer())
 
@@ -96,12 +98,7 @@ def train_neural_network(x):
             data_x = xy_dataTraining[0:trainingDataSize, 0:36]
             data_y = xy_dataTraining[0:trainingDataSize, 36:38]
 
-            # print(data_y)
-
             data_y = np.resize(data_y, (328, 2))
-
-            # print(data_y[0])
-
 
             for piece in range(len(data_x)):
                 input_x =  [data_x[piece]]
@@ -114,12 +111,10 @@ def train_neural_network(x):
                 if np.argmax(predict[0]) == np.argmax(expected_y[0]):
                     accuracy += 1
 
-
             print("Epoch: ", epoch, ", accuracy_standing: ", (accuracy/len(data_x)))
 
 
-
-        # TESTING OUR NETWORK, SAME SESSION
+        # IMAGE TESTING BULK
 
         accuracy = 0
 
@@ -138,27 +133,23 @@ def train_neural_network(x):
         print("Testing Accuracy on Entire Set:  ", (accuracy/len(data_x)))
 
 
-        # Input single picture into network:
+        # AD HOC IMAGE TESTING:
 
-        # - Call data script generator on new image
-        # dataGeneration()
-        # - Pass new results into network and get prediction
+        cont = "Y"
+        while(cont == "Y" or cont = "y"):
+            # - Call data script generator on new image and generate csv
+            dataScriptGenerator()
 
-        # accuracy = 0
+            # - Pass new csv data into network and print out prediction
+            data_x = = np.genfromtxt(sys.path[0] + r'/tf-pose-estimation/src/aClean.csv', delimiter=',')
+            
+            for piece in range(len(data_x)):
+                input_x =  [data_x[piece]]
+                predict = sess.run([prediction], feed_dict={x: input_x})
 
-        # data_x = xy_dataTesting[0:testingDataSize, 0:36]
-        # data_y = xy_dataTesting[0:testingDataSize, 36:38]
-        
-        # for piece in range(len(data_x)):
-        #     input_x =  [data_x[piece]]
-        #     expected_y = [data_y[piece]]
-        #     predict = sess.run([prediction], feed_dict={x: input_x, y: expected_y})
+                print("Network Output: " , predict[0])
 
-        #     print(predict[0], " " , expected_y[0],2)
-        #     if np.argmax(predict[0]) == np.argmax(expected_y[0]):
-        #         accuracy += 1
-
-        # print("Testing Accuracy on Entire Set:  ", (accuracy/len(data_x)))
+            cont = input("Continue? (Y or N): ")
 
 
 train_neural_network(x)
