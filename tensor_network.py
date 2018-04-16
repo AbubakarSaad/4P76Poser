@@ -139,7 +139,7 @@ def train_neural_network(x):
         print("Testing Accuracy on Entire Set:  ", (accuracy/len(data_x)))
 
 
-        # AD HOC IMAGE TESTING FROM FOLDER:
+        # AD HOC IMAGE TESTING FROM:
 
         cont = "Y"
         while(cont == "Y" or cont == "y"):
@@ -160,7 +160,7 @@ def train_neural_network(x):
             cont = input("Continue? (Y or N): ")
 
 
-        # LIVE IMAGE CLASSIFICATION
+        
 
 
 train_neural_network(x)
