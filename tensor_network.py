@@ -1,7 +1,9 @@
 import tensorflow as tf
 import numpy as np
 import sys
+import math
 
+np.set_printoptions(threshold=np.nan)
 
 squattingData = np.genfromtxt(sys.path[0] + r'/tf-pose-estimation/src/trainingSquattingClean.csv', delimiter=',')
 standingData = np.genfromtxt(sys.path[0] + r'/tf-pose-estimation/src/trainingStandingClean.csv', delimiter=',')
@@ -13,20 +15,29 @@ standingDataExpected = np.zeros((standingData.shape[0], 1))
 data_x = np.concatenate((squattingData , standingData), axis=0)
 data_y = np.concatenate((squattingDataExpected, standingDataExpected), axis=0)
 
-# replace -1 with 0
+# replace -1 with 0 in the whole dataset.
 data_x[data_x < 0] = 0
 
-# The combined data data for shuffling purposes.
-xy_data = np.concatenate((data_x, data_y), axis=1)
+# The specifc size for each dataset
+trainingDataSize = math.floor(data_x.shape[0] * 0.7)
+testingDataSize = math.ceil(data_x.shape[0] * 0.3) + trainingDataSize
 
-# The combined data data for shuffling purposes.
-xy_data = np.concatenate((data_x, data_y), axis=1)
+# The training data 
+trainingData = data_x[0 : trainingDataSize]
+trainingDataClass = data_y[0 : trainingDataSize]
+
+# The testing data
+testingData = data_x[trainingDataSize : testingDataSize]
+testingDataClass = data_y[trainingDataSize : testingDataSize]
+
+# The combined data for shuffling purposes.
+xy_dataTraining = np.concatenate((trainingData, trainingDataClass), axis=1)
+xy_dataTesting = np.concatenate((testingData, testingDataClass), axis=1)
 
 # Network Parameters
 n_input_nodes = 36
 n_nodes_hl1 = 50
 n_nodes_hl2 = 50
-
 n_output_node = 1
 hm_epochs = 100
 learning_rate = 0.01
@@ -60,7 +71,6 @@ def neural_network_model(data):
 
     return output
 
-
 def train_neural_network(x):
     prediction = neural_network_model(x)
 
@@ -77,9 +87,9 @@ def train_neural_network(x):
             epoch_loss = 0
             accuracy = 0
             
-            np.random.shuffle(xy_data)
-            data_x = xy_data[0:328, 0:36]
-            data_y = xy_data[0:328, 36]
+            np.random.shuffle(xy_dataTraining)
+            data_x = xy_dataTraining[0:trainingDataSize, 0:36]
+            data_y = xy_dataTraining[0:trainingDataSize, 36]
             data_y = np.resize(data_y, (328, 1))
 
             for piece in range(len(data_x)):
