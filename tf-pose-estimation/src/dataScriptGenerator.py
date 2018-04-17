@@ -36,7 +36,7 @@ class dataScriptGenerator(object):
 
         w, h = model_wh(args.resolution)
         e = TfPoseEstimator(get_graph_path(args.model), target_size=(w, h))
-        directory_in_str = sys.path[0] + r"/../images/OurTest/"
+        directory_in_str = sys.path[0] + "\\..\\images\\OurTest\\"
 
         try:
             os.remove(outputfile)
@@ -134,6 +134,52 @@ class dataScriptGenerator(object):
 
         dataScriptGenerator.dataCleanup()
 
+
+    def liveData(self):
+        parser = argparse.ArgumentParser(description='tf-pose-estimation run')
+        parser.add_argument('--resolution', type=str, default='432x368', help='network input resolution. default=432x368')
+        parser.add_argument('--model', type=str, default='mobilenet_thin', help='cmu / mobilenet_thin')
+        parser.add_argument('--scales', type=str, default='[None]', help='for multiple scales, eg. [1.0, (1.1, 0.05)]')
+        args = parser.parse_args()
+        scales = ast.literal_eval(args.scales)
+
+        w, h = model_wh(args.resolution)
+        e = TfPoseEstimator(get_graph_path(args.model), target_size=(w, h))
+        directory_in_str = sys.path[0] + r"/../images/LiveTest/"
+
+        try:
+            os.remove(outputfile)
+            os.remove(cleanedOutputfile)
+        except OSError:
+            pass
+       
+        print(directory_in_str)
+        for file in os.listdir(directory_in_str):
+            filename = os.fsdecode(file)
+            if filename.endswith(".jpg") or filename.endswith(".png"): 
+                fullpath = directory_in_str + filename
+                
+                print("Running on image: " + fullpath)
+
+                # estimate human poses from a single image !
+                image = common.read_imgfile(fullpath, None, None)
+                # image = cv2.fastNlMeansDenoisingColored(image, None, 10, 10, 7, 21)
+                t = time.time()
+                humans = e.inference(image, scales=scales)
+                elapsed = time.time() - t
+
+                logger.info('inference image: %s in %.4f seconds.' % (fullpath, elapsed))
+
+                image = TfPoseEstimator.draw_humans(image, humans, imgcopy=False)
+                # cv2.imshow('tf-pose-estimation result', image)
+                # cv2.waitKey()
+
+                myFile = open(outputfile, 'a')
+                # myFile.write(str(filename) + ',')
+                # print(filename)
+                myFile.write('\n')
+                # break
+                myFile.close()
 
     def dataCleanup():
         print ("  CLEANING DATA...")
