@@ -181,7 +181,24 @@ def train_neural_network(x):
 
                 print("Network Output: " , predict[0])
 
-            cont = input("Continue? (Y or N): ")
+            cont = input("Continue? ('Y' or 'N'), use LIVECAM? ('live'): ")
+
+
+        # LIVE CAMERA TESSTING
+
+        while (cont == "live"):
+
+            #Call image capture method
+
+            #Run Datascriptgenerator
+
+            #run network test on new aClean.csv file
+
+            #print "SQUATTING" or "STANDING" output
+
+            pass
+
+
 
 
 train_neural_network(x)
