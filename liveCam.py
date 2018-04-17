@@ -1,5 +1,5 @@
 import urllib.request
-import cv2
+import cv2, sys
 import numpy as np
 
 
@@ -10,8 +10,7 @@ def getImage():
     
     imgNp = np.array(bytearray(imgResp), dtype=np.uint8)
     img = cv2.imdecode(imgNp, -1)
-    cv2.imwrite('cap.jpg', img)
-    c = cv2.waitKey(0)
+    cv2.imwrite(sys.path[0] + r"/../images/LiveTest/cap.png", img)
 
 
 
