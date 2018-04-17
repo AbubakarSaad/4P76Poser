@@ -3,8 +3,10 @@ import numpy as np
 import sys
 import math
 import importlib
+import real_time
 
-sys.path.insert(0, sys.path[0] + "\\tf-pose-estimation\\src")
+
+sys.path.insert(0, sys.path[0] + "\\tf-pose-estimation/src")
 print (sys.path)
 
 dataGenerator = importlib.import_module('tf-pose-estimation.src.dataScriptGenerator', None)
@@ -162,43 +164,69 @@ def train_neural_network(x):
         cont = "Y"
         while(cont == "Y" or cont == "y"):
             # - Call data script generator on new image and generate csv
+            
             dataGenerator.dataScriptGenerator()
             
             # - Pass new csv data into network and print out prediction
             data_x = np.genfromtxt(sys.path[0] + '\\aClean.csv', delimiter=',')
-            print(data_x)
-            if (len(data_x)):
+            print(data_x.ndim)
+            print(len(data_x))
+            
+            if data_x.ndim == 1:
                 data_x = np.resize(data_x, (1,36))
+            
+            if (len(data_x)) > 0:
+                for piece in range(len(data_x)):
+                    
+                    input_x =  [data_x[piece]]
+                    predict = sess.run([prediction], feed_dict={
+                            x: input_x, 
+                            keep_probL1: 1.0, 
+                            keep_probL2: 1.0
+                        })
 
-            for piece in range(len(data_x)):
-                
-                input_x =  [data_x[piece]]
-                predict = sess.run([prediction], feed_dict={
-                        x: input_x, 
-                        keep_probL1: 1.0, 
-                        keep_probL2: 1.0
-                    })
-
-                print("Network Output: " , predict[0])
+                    print("Network Output: " , predict[0])
 
             cont = input("Continue? ('Y' or 'N'), use LIVECAM? ('live'): ")
 
 
         # LIVE CAMERA TESSTING
 
-        while (cont == "live"):
-
+        while (cont == 'live' or cont == "y" or cont == "Y"):
+            
             #Call image capture method
-
+            real_time.realTimeCapture()
             #Run Datascriptgenerator
+            dataGenerator.dataScriptGenerator().liveData()
+            try:
+                #run network test on new aClean.csv file
+                data_x = np.genfromtxt(sys.path[0] + '\\aClean.csv', delimiter=',')
+                print(data_x)
+                
+                data_x = np.resize(data_x, (1,36))
+                
+                if data_x.ndim == 1:
+                    predict = sess.run([prediction], feed_dict={
+                            x: data_x, 
+                            keep_probL1: 1.0, 
+                            keep_probL2: 1.0
+                        })
 
-            #run network test on new aClean.csv file
+                print("Network Output: " , predict[0])
 
-            #print "SQUATTING" or "STANDING" output
+                #print "SQUATTING" or "STANDING" output
+                if np.argmax(predict[0] == 0):
+                    print("SQUATTING")
+                elif np.argmax(predict[0] == 1):
+                    print("STANDING")
 
-            pass
+
+                
+            except:
+                print("no human found")
 
 
+            cont = input("Continue? ('Y' or 'N')")
 
 
 train_neural_network(x)
