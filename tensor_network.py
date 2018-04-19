@@ -13,7 +13,7 @@ dataGenerator = importlib.import_module('tf-pose-estimation.src.dataScriptGenera
 
 np.set_printoptions(threshold=np.nan)
 
-csvOutputName = "default.csv"
+csvOutputName = "tests/default.csv"
 
 # The .CSV file to write to for each run
 file = open(csvOutputName, 'w', newline='')

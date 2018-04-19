@@ -1,0 +1,11 @@
+
+"Epochs: ","100"
+"Number of hidden nodes layer 1: ","30"
+"Number of hidden nodes layer 2: ","25"
+"Learning rate: ","0.02"
+"Drop out Rate Layer 1: ","0.5"
+"Drop out Rate Layer 2: ","0.5"
+"Training Percent: ","0.7"
+"Testing Percent: ","0.3"
+
+"Run Number","Training Accuracy","Testing Accuracy"
