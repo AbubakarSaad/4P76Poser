@@ -13,12 +13,12 @@ from common import CocoPairsNetwork, CocoPairs, CocoPart
 
 import readKeyPoint
 
-logger = logging.getLogger('TfPoseEstimator')
-logger.setLevel(logging.INFO)
+#logger = logging.getLogger('TfPoseEstimator')
+#logger.setLevel(logging.INFO)
 ch = logging.StreamHandler()
 formatter = logging.Formatter('[%(asctime)s] [%(name)s] [%(levelname)s] %(message)s')
 ch.setFormatter(formatter)
-logger.addHandler(ch)
+#logger.addHandler(ch)
 
 
 class Human:
@@ -416,11 +416,11 @@ class TfPoseEstimator:
             rois.extend(roi)
             infos.extend(info)
 
-        logger.debug('inference+')
+        # logger.debug('inference+')
         output = self.persistent_sess.run(self.tensor_output, feed_dict={self.tensor_image: rois})
         heatMats = output[:, :, :, :19]
         pafMats = output[:, :, :, 19:]
-        logger.debug('inference-')
+        # logger.debug('inference-')
 
         output_h, output_w = output.shape[1:3]
         max_ratio_w = max_ratio_h = 10000.0

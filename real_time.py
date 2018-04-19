@@ -7,7 +7,7 @@ def realTimeCapture():
 
     img_counter = 0
     ret, frame = cam.read()
-    cv2.imshow("test", frame)
+    # cv2.imshow("test", frame)
 
     img_name = sys.path[0] + r"/../images/LiveTest/cap.png"
     cv2.imwrite(img_name, frame)

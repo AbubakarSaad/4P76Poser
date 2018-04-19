@@ -11,6 +11,7 @@ import numpy as np
 from estimator import TfPoseEstimator
 from networks import get_graph_path, model_wh
 
+import matplotlib.pyplot as plt
 from lifting.prob_model import Prob3dPose
 from lifting.draw import plot_pose
 
@@ -27,15 +28,17 @@ cleanedOutputfile = sys.path[0] + '\\aClean.csv'
 class dataScriptGenerator(object):
 
     def __init__(self):
-        parser = argparse.ArgumentParser(description='tf-pose-estimation run')
-        parser.add_argument('--resolution', type=str, default='432x368', help='network input resolution. default=432x368')
-        parser.add_argument('--model', type=str, default='mobilenet_thin', help='cmu / mobilenet_thin')
-        parser.add_argument('--scales', type=str, default='[None]', help='for multiple scales, eg. [1.0, (1.1, 0.05)]')
-        args = parser.parse_args()
-        scales = ast.literal_eval(args.scales)
+        self.parser = argparse.ArgumentParser(description='tf-pose-estimation run')
+        self.parser.add_argument('--resolution', type=str, default='432x368', help='network input resolution. default=432x368')
+        self.parser.add_argument('--model', type=str, default='mobilenet_thin', help='cmu / mobilenet_thin')
+        self.parser.add_argument('--scales', type=str, default='[None]', help='for multiple scales, eg. [1.0, (1.1, 0.05)]')
+        self.args = self.parser.parse_args()
+        self.scales = ast.literal_eval(self.args.scales)
 
-        w, h = model_wh(args.resolution)
-        e = TfPoseEstimator(get_graph_path(args.model), target_size=(w, h))
+        self.w, self.h = model_wh(self.args.resolution)
+        self.e = TfPoseEstimator(get_graph_path(self.args.model), target_size=(self.w, self.h))
+
+    def adHocData(self):
         directory_in_str = sys.path[0] + "\\..\\images\\OurTest\\"
 
         try:
@@ -55,7 +58,7 @@ class dataScriptGenerator(object):
                 image = common.read_imgfile(fullpath, None, None)
                 # image = cv2.fastNlMeansDenoisingColored(image, None, 10, 10, 7, 21)
                 t = time.time()
-                humans = e.inference(image, scales=scales)
+                humans = self.e.inference(image, scales=self.scales)
                 elapsed = time.time() - t
 
                 logger.info('inference image: %s in %.4f seconds.' % (fullpath, elapsed))
@@ -72,7 +75,7 @@ class dataScriptGenerator(object):
                 myFile.close()
 
                 try:
-                    import matplotlib.pyplot as plt
+                    
 
                     fig = plt.figure()
                     a = fig.add_subplot(2, 2, 1)
@@ -80,16 +83,16 @@ class dataScriptGenerator(object):
                     plt.imshow(cv2.cvtColor(image, cv2.COLOR_BGR2RGB))
 
                     bgimg = cv2.cvtColor(image.astype(np.uint8), cv2.COLOR_BGR2RGB)
-                    bgimg = cv2.resize(bgimg, (e.heatMat.shape[1], e.heatMat.shape[0]), interpolation=cv2.INTER_AREA)
+                    bgimg = cv2.resize(bgimg, (self.e.heatMat.shape[1], self.e.heatMat.shape[0]), interpolation=cv2.INTER_AREA)
 
                     # show network output
                     a = fig.add_subplot(2, 2, 2)
                     plt.imshow(bgimg, alpha=0.5)
-                    tmp = np.amax(e.heatMat[:, :, :-1], axis=2)
+                    tmp = np.amax(self.e.heatMat[:, :, :-1], axis=2)
                     plt.imshow(tmp, cmap=plt.cm.gray, alpha=0.5)
                     plt.colorbar()
 
-                    tmp2 = e.pafMat.transpose((2, 0, 1))
+                    tmp2 = self.e.pafMat.transpose((2, 0, 1))
                     tmp2_odd = np.amax(np.absolute(tmp2[::2, :, :]), axis=0)
                     tmp2_even = np.amax(np.absolute(tmp2[1::2, :, :]), axis=0)
 
@@ -132,19 +135,10 @@ class dataScriptGenerator(object):
                 except:
                     print ("Error when plotting image ")
 
-        dataScriptGenerator.dataCleanup()
+        dataScriptGenerator.dataCleanup(self)
 
 
     def liveData(self):
-        parser = argparse.ArgumentParser(description='tf-pose-estimation run')
-        parser.add_argument('--resolution', type=str, default='432x368', help='network input resolution. default=432x368')
-        parser.add_argument('--model', type=str, default='mobilenet_thin', help='cmu / mobilenet_thin')
-        parser.add_argument('--scales', type=str, default='[None]', help='for multiple scales, eg. [1.0, (1.1, 0.05)]')
-        args = parser.parse_args()
-        scales = ast.literal_eval(args.scales)
-
-        w, h = model_wh(args.resolution)
-        e = TfPoseEstimator(get_graph_path(args.model), target_size=(w, h))
         directory_in_str = sys.path[0] + r"/../images/LiveTest/"
 
         try:
@@ -153,22 +147,15 @@ class dataScriptGenerator(object):
         except OSError:
             pass
        
-        print(directory_in_str)
         for file in os.listdir(directory_in_str):
             filename = os.fsdecode(file)
             if filename.endswith(".jpg") or filename.endswith(".png"): 
                 fullpath = directory_in_str + filename
                 
-                print("Running on image: " + fullpath)
-
                 # estimate human poses from a single image !
                 image = common.read_imgfile(fullpath, None, None)
-                # image = cv2.fastNlMeansDenoisingColored(image, None, 10, 10, 7, 21)
-                t = time.time()
-                humans = e.inference(image, scales=scales)
-                elapsed = time.time() - t
 
-                logger.info('inference image: %s in %.4f seconds.' % (fullpath, elapsed))
+                humans = self.e.inference(image, scales=self.scales)
 
                 image = TfPoseEstimator.draw_humans(image, humans, imgcopy=False)
                 # cv2.imshow('tf-pose-estimation result', image)
@@ -181,7 +168,7 @@ class dataScriptGenerator(object):
                 # break
                 myFile.close()
 
-    def dataCleanup():
+    def dataCleanup(self):
         print ("  CLEANING DATA...")
 
         keypointData = open(outputfile, 'r')

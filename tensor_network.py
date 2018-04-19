@@ -3,11 +3,10 @@ import numpy as np
 import sys
 import math
 import importlib
-import real_time
+import real_time, liveCam
 
 
 sys.path.insert(0, sys.path[0] + "\\tf-pose-estimation/src")
-print (sys.path)
 
 dataGenerator = importlib.import_module('tf-pose-estimation.src.dataScriptGenerator', None)
 
@@ -15,8 +14,8 @@ np.set_printoptions(threshold=np.nan)
 
 # Network Parameters
 n_input_nodes = 36
-n_nodes_hl1 = 15
-n_nodes_hl2 = 20
+n_nodes_hl1 = 30
+n_nodes_hl2 = 25
 n_output_node = 2
 hm_epochs = 100
 learning_rate = 0.02
@@ -56,10 +55,10 @@ testingDataClass = data_y[trainingDataSize : testingDataSize]
 xy_dataTraining = np.concatenate((trainingData, trainingDataClass), axis=1)
 xy_dataTesting = np.concatenate((testingData, testingDataClass), axis=1)
 
-#print(xy_dataTraining)
-
 x = tf.placeholder('float', [None, n_input_nodes])
 y = tf.placeholder('float', [None, n_output_node])
+
+# Probability for drop out in each layer.
 keep_probL1 = tf.placeholder(tf.float32)
 keep_probL2 = tf.placeholder(tf.float32)
 
@@ -87,7 +86,6 @@ def neural_network_model(data):
 
     output = tf.matmul(dropOutL2, output_layer['weights']) + output_layer['biases']
     output = tf.nn.sigmoid(output)
-    # output = tf.Print(output, [output], "Output Layer: ")
 
     return output
 
@@ -102,7 +100,9 @@ def train_neural_network(x):
 
     with tf.Session() as sess:
 
-        # TRAINING FUNCTIONALITY
+        ##########################
+        # TRAINING FUNCTIONALITY #
+        ##########################
 
         sess.run(tf.global_variables_initializer())
 
@@ -135,7 +135,9 @@ def train_neural_network(x):
             print("Epoch: ", epoch, ", accuracy_standing: ", (accuracy/len(data_x)))
 
 
-        # IMAGE TESTING BULK
+        ######################
+        # IMAGE TESTING BULK #
+        ######################
 
         accuracy = 0
 
@@ -159,21 +161,29 @@ def train_neural_network(x):
         print("Testing Accuracy on Entire Set:  ", (accuracy/len(data_x)))
 
 
-        # AD HOC IMAGE TESTING:
+        ########################
+        # AD HOC IMAGE TESTING #
+        ########################
 
-        cont = "Y"
-        while(cont == "Y" or cont == "y"):
-            # - Call data script generator on new image and generate csv
+        # Preload cmu
+        dG = dataGenerator.dataScriptGenerator()
+
+        continueProcessing = "live"
+
+        while(continueProcessing == "Y" or continueProcessing == "y"):
             
-            dataGenerator.dataScriptGenerator()
+            # Call data script generator on new image and generate csv
+            dG.adHocData()
             
-            # - Pass new csv data into network and print out prediction
+            # Pass new csv data into network and print out prediction
             data_x = np.genfromtxt(sys.path[0] + '\\aClean.csv', delimiter=',')
             print(data_x.ndim)
             print(len(data_x))
             
             if data_x.ndim == 1:
                 data_x = np.resize(data_x, (1,36))
+
+            data_x[data_x < 0] = 0
             
             if (len(data_x)) > 0:
                 for piece in range(len(data_x)):
@@ -187,46 +197,54 @@ def train_neural_network(x):
 
                     print("Network Output: " , predict[0])
 
-            cont = input("Continue? ('Y' or 'N'), use LIVECAM? ('live'): ")
+            continueProcessing = input("Continue processing? ('Y' or 'N'), use LIVECAM? ('live'): ")
 
 
-        # LIVE CAMERA TESSTING
+        #######################
+        # LIVE CAMERA TESTING #
+        #######################
 
-        while (cont == 'live' or cont == "y" or cont == "Y"):
+        while (continueProcessing == 'live' or continueProcessing == "y" or continueProcessing == "Y"):
             
-            #Call image capture method
-            real_time.realTimeCapture()
-            #Run Datascriptgenerator
-            dataGenerator.dataScriptGenerator().liveData()
+            # Call image capture method
+
+            # real_time.realTimeCapture()
+            liveCam.getImage()
+
+            # Run Datascriptgenerator
+            dG.liveData()
+
             try:
-                #run network test on new aClean.csv file
-                data_x = np.genfromtxt(sys.path[0] + '\\aClean.csv', delimiter=',')
-                print(data_x)
-                
-                data_x = np.resize(data_x, (1,36))
+                # Run network test on new aClean.csv file
+                data_x = np.genfromtxt(sys.path[0] + '\\a.csv', delimiter=',')
                 
                 if data_x.ndim == 1:
-                    predict = sess.run([prediction], feed_dict={
-                            x: data_x, 
-                            keep_probL1: 1.0, 
-                            keep_probL2: 1.0
-                        })
+                    data_x = np.resize(data_x, (1,36))
 
-                print("Network Output: " , predict[0])
+                data_x[data_x < 0] = 0
 
-                #print "SQUATTING" or "STANDING" output
-                if np.argmax(predict[0] == 0):
-                    print("SQUATTING")
-                elif np.argmax(predict[0] == 1):
-                    print("STANDING")
+                if (len(data_x)) > 0:
+                    for piece in range(len(data_x)):
+                        
+                        input_x =  [data_x[piece]]
+                        predict = sess.run([prediction], feed_dict={
+                                x: input_x, 
+                                keep_probL1: 1.0, 
+                                keep_probL2: 1.0
+                            })
 
+                        # print("Network Output: " , predict[0])
 
+                        # Print "SQUATTING" or "STANDING" output
+                        if (np.argmax(predict[0]) == 0):
+                            print("SQUATTING")
+                        elif (np.argmax(predict[0]) == 1):
+                            print("STANDING")
                 
             except:
                 print("no human found")
 
-
-            cont = input("Continue? ('Y' or 'N')")
+            # continueProcessing = input("Continue Processing? ('Y' or 'N')")
 
 
 train_neural_network(x)
