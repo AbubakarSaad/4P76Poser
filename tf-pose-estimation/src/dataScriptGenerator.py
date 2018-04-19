@@ -25,6 +25,7 @@ logger.addHandler(ch)
 outputfile = sys.path[0] + '\\a.csv'
 cleanedOutputfile = sys.path[0] + '\\aClean.csv'
 
+
 class dataScriptGenerator(object):
 
     def __init__(self):
@@ -38,15 +39,20 @@ class dataScriptGenerator(object):
         self.w, self.h = model_wh(self.args.resolution)
         self.e = TfPoseEstimator(get_graph_path(self.args.model), target_size=(self.w, self.h))
 
+    # This method is called to return all humans found in images within the OurTest images folder
+    # Generates a csv file with the latest human skeleton keypoint data
+    # Also plots each skeleton onto the images
     def adHocData(self):
         directory_in_str = sys.path[0] + "\\..\\images\\OurTest\\"
 
+        # Delete old csv files
         try:
             os.remove(outputfile)
             os.remove(cleanedOutputfile)
         except OSError:
             pass
 
+        # Run through every image in the folder
         for file in os.listdir(directory_in_str):
             filename = os.fsdecode(file)
             if filename.endswith(".jpg") or filename.endswith(".png"): 
@@ -54,7 +60,7 @@ class dataScriptGenerator(object):
                 
                 print("Running on image: " + fullpath)
 
-                # estimate human poses from a single image !
+                # Estimate human poses from a single image !
                 image = common.read_imgfile(fullpath, None, None)
                 # image = cv2.fastNlMeansDenoisingColored(image, None, 10, 10, 7, 21)
                 t = time.time()
@@ -74,9 +80,9 @@ class dataScriptGenerator(object):
                 # break
                 myFile.close()
 
+                # Attempt to plot our skeletons onto the image
                 try:
                     
-
                     fig = plt.figure()
                     a = fig.add_subplot(2, 2, 1)
                     a.set_title('Result')
@@ -138,6 +144,9 @@ class dataScriptGenerator(object):
         dataScriptGenerator.dataCleanup(self)
 
 
+    # This method is called to return all humans found in the latest image within LiveTest folder
+    # Generates a csv file with the human skeleton keypoint data
+    # Does not plot skeletons onto images, this is as basic and optimized as possible
     def liveData(self):
         directory_in_str = sys.path[0] + r"/../images/LiveTest/"
 
@@ -168,6 +177,8 @@ class dataScriptGenerator(object):
                 # break
                 myFile.close()
 
+
+    # Cleans the generated csv file, removing data which has one or less knee keypoints missing
     def dataCleanup(self):
         print ("  CLEANING DATA...")
 
@@ -181,14 +192,14 @@ class dataScriptGenerator(object):
             print (row)
             badKeypointCount = 0
 
-            #16 is the start of our x y pairs for L and R hip, knee and ankle keypoints
+            # 16 is the start of our x y pairs for L and R hip, knee and ankle keypoints
             for keypointIndex in range (16,28,2):
 
                 if (row[keypointIndex] == "-1"):
                     badKeypointCount += 1
             
             if (badKeypointCount < 4):
-                #good data, lets write it to our new clean file
+                # Good data, lets write it to our new clean file
                 cleanKeypointWriter.writerow(row[:len(row)-1])
 
         
