@@ -13,7 +13,7 @@ def getImage():
         print("Please start server up for IP Webcam.")
     imgNp = np.array(bytearray(imgResp), dtype=np.uint8)
     img = cv2.imdecode(imgNp, -1)
-    print(sys.path[0])
+    
     cv2.imwrite(sys.path[0] + '\..\images\LiveTest\cap.jpg', img)
 getImage()    
 
