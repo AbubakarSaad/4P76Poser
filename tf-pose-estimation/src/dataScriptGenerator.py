@@ -3,9 +3,6 @@ import logging
 import time
 import ast, os, sys, csv, cv2
 
-print("DATASCRIPTPATHS")
-print(sys.path)
-
 import common
 import numpy as np
 from estimator import TfPoseEstimator
@@ -51,8 +48,6 @@ class dataScriptGenerator(object):
             filename = os.fsdecode(file)
             if filename.endswith(".jpg") or filename.endswith(".png"): 
                 fullpath = directory_in_str + filename
-                
-                print("Running on image: " + fullpath)
 
                 # estimate human poses from a single image !
                 image = common.read_imgfile(fullpath, None, None)
@@ -71,12 +66,10 @@ class dataScriptGenerator(object):
                 # myFile.write(str(filename) + ',')
                 # print(filename)
                 myFile.write('\n')
-                # break
                 myFile.close()
 
                 try:
                     
-
                     fig = plt.figure()
                     a = fig.add_subplot(2, 2, 1)
                     a.set_title('Result')
@@ -169,8 +162,6 @@ class dataScriptGenerator(object):
                 myFile.close()
 
     def dataCleanup(self):
-        print ("  CLEANING DATA...")
-
         keypointData = open(outputfile, 'r')
         keypointReader = csv.reader(keypointData)
         
@@ -178,7 +169,6 @@ class dataScriptGenerator(object):
         cleanKeypointWriter = csv.writer(cleanKeypointData)
         
         for row in keypointReader:
-            print (row)
             badKeypointCount = 0
 
             #16 is the start of our x y pairs for L and R hip, knee and ankle keypoints
@@ -191,8 +181,6 @@ class dataScriptGenerator(object):
                 #good data, lets write it to our new clean file
                 cleanKeypointWriter.writerow(row[:len(row)-1])
 
-        
-        print ( "DATA CLEAN COMPLETE" )
         keypointData.close()
         cleanKeypointData.close()
 
