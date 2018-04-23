@@ -13,7 +13,7 @@ dataGenerator = importlib.import_module('tf-pose-estimation.src.dataScriptGenera
 
 np.set_printoptions(threshold=np.nan)
 
-csvOutputName = "tests/dropoutRate70_70.csv"
+csvOutputName = "tests/Tanh.csv"
 
 # The .CSV file to write to for each run
 file = open(csvOutputName, 'w', newline='')
@@ -31,8 +31,8 @@ minWeight = -1.0
 maxWeight = 1.0
 trainingPercent = 0.7
 testingPercent = 0.3
-dropOutRateL1 = 0.7
-dropOutRateL2 = 0.7
+dropOutRateL1 = 0.5
+dropOutRateL2 = 0.5
 numOfRuns = 30
 
 # Print the network params to the csv file.
@@ -96,13 +96,13 @@ def neural_network_model(data):
 
 
     l1 = tf.add(tf.matmul(data,hidden_1_layer['weights']), hidden_1_layer['biases'])
-    l1 = tf.nn.sigmoid(l1)
+    l1 = tf.nn.tanh(l1)
 
     # Apply dropout to the first layer.
     dropOutL1 = tf.nn.dropout(l1, keep_probL1)
 
     l2 = tf.add(tf.matmul(dropOutL1, hidden_2_layer['weights']), hidden_2_layer['biases'])
-    l2 = tf.nn.sigmoid(l2)
+    l2 = tf.nn.tanh(l2)
     
     dropOutL2 = tf.nn.dropout(l2, keep_probL2)
 
