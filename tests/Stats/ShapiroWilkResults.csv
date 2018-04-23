@@ -10,6 +10,6 @@ learning_rate_half,30,0.929,0.019,0,0.901551,0.009167,0.930296,reject
 numOfHiddenNodes30_30,30,0.891,0.025,0.001,0.952047,0.191751,0.930296,accept
 numOfHiddenNodes30_40,30,0.895,0.018,0,0.921241,0.028889,0.930296,reject
 numOfHiddenNodes50_50,30,0.887,0.032,0.001,0.977033,0.742392,0.930296,accept
-training_set_minus_10_percent,30,0.888,0.02,0,0.778132,2.7E-05,0.930296,reject
+training_set_minus_10_percent,30,0.888,0.02,0,0.778132,2.70E-05,0.930296,reject
 training_set_plus_10_percent,30,0.91,0.031,0.001,0.980412,0.836411,0.930296,accept
 Tanh,30,0.533,0.507,0.257,0.637372,0,0.930296,reject
