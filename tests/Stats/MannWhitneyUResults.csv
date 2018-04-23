@@ -11,3 +11,4 @@ numOfHiddenNodes30_40,30,2.43204,0.0151,significant
 numOfHiddenNodes50_50,30,3.0382,0.00236,significant
 training_set_minus_10_percent,30,2.90514,0.00362,significant
 training_set_plus_10_percent,30,0.77618,0.4354,not significant
+Tanh,30,-0.43614,0.65994,not significant
