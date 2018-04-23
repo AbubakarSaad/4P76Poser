@@ -13,7 +13,7 @@ dataGenerator = importlib.import_module('tf-pose-estimation.src.dataScriptGenera
 
 np.set_printoptions(threshold=np.nan)
 
-csvOutputName = "tests/default.csv"
+csvOutputName = "tests/dropoutRate70_70.csv"
 
 # The .CSV file to write to for each run
 file = open(csvOutputName, 'w', newline='')
@@ -31,8 +31,8 @@ minWeight = -1.0
 maxWeight = 1.0
 trainingPercent = 0.7
 testingPercent = 0.3
-dropOutRateL1 = 0.5
-dropOutRateL2 = 0.5
+dropOutRateL1 = 0.7
+dropOutRateL2 = 0.7
 numOfRuns = 30
 
 # Print the network params to the csv file.
