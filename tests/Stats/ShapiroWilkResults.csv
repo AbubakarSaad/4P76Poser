@@ -1,0 +1,14 @@
+,# samples,mean,std dev,var,sw W,sw p-val,sw crit val,result
+default,30,0.916,0.034,0.001,0.901268,0.009022,0.930296,reject
+dropoutRate40_50,30,0.888,0.013,0,0.885182,0.003716,0.930296,reject
+dropoutRate60_50,30,0.923,0.022,0,0.938654,0.083679,0.930296,accept
+dropoutRate70_70,30,0.918,0.022,0,0.949922,0.168244,0.930296,accept
+epochs_minus_50,30,0.889,0.022,0.001,0.933673,0.061517,0.930296,accept
+epochs_plus_50,30,0.921,0.021,0,0.940875,0.096032,0.930296,accept
+learning_rate_double,30,0.633,0.49,0.24,0.611913,0,0.930296,reject
+learning_rate_half,30,0.929,0.019,0,0.901551,0.009167,0.930296,reject
+numOfHiddenNodes30_30,30,0.891,0.025,0.001,0.952047,0.191751,0.930296,accept
+numOfHiddenNodes30_40,30,0.895,0.018,0,0.921241,0.028889,0.930296,reject
+numOfHiddenNodes50_50,30,0.887,0.032,0.001,0.977033,0.742392,0.930296,accept
+training_set_minus_10_percent,30,0.888,0.02,0,0.778132,2.7E-05,0.930296,reject
+training_set_plus_10_percent,30,0.91,0.031,0.001,0.980412,0.836411,0.930296,accept
