@@ -1,10 +1,10 @@
 # Poser FINAL PROJECT 4P76 
 
-Our project estimate the giving pose of human execise. 
+Our project estimates the pose of human execise, either squatting or standing. 
 
 ## Getting Started
 
-Clone the repo in local folder
+Clone the repo into your local folder
 
 ### Prerequisites
 
@@ -28,7 +28,7 @@ pip install tensorflow
 ## Running the program
 
 ```python
-python tensor_flow.py
+python tensor_network.py
 ```
 
 
