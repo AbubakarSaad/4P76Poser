@@ -13,11 +13,11 @@ dataGenerator = importlib.import_module('tf-pose-estimation.src.dataScriptGenera
 
 np.set_printoptions(threshold=np.nan)
 
-csvOutputName = "tests/dropoutRate70_70.csv"
+csvOutputName = "tests/Tanh.csv"
 
 # The .CSV file to write to for each run
-file = open(csvOutputName, 'w', newline='')
-wr = csv.writer(file, quoting=csv.QUOTE_ALL)
+#file = open(csvOutputName, 'w', newline='')
+#wr = csv.writer(file, quoting=csv.QUOTE_ALL)
 
 
 # Network Parameters
@@ -31,21 +31,21 @@ minWeight = -1.0
 maxWeight = 1.0
 trainingPercent = 0.7
 testingPercent = 0.3
-dropOutRateL1 = 0.7
-dropOutRateL2 = 0.7
-numOfRuns = 30
+dropOutRateL1 = 0.5
+dropOutRateL2 = 0.5
+numOfRuns = 1
 
 # Print the network params to the csv file.
-wr.writerow([ ])
-wr.writerow(["Epochs: ", hm_epochs])
-wr.writerow(["Number of hidden nodes layer 1: ", n_nodes_hl1])
-wr.writerow(["Number of hidden nodes layer 2: ", n_nodes_hl2])
-wr.writerow(["Learning rate: ", learning_rate])
-wr.writerow(["Drop out Rate Layer 1: ", dropOutRateL1])
-wr.writerow(["Drop out Rate Layer 2: ", dropOutRateL2])
-wr.writerow(["Training Percent: ", trainingPercent])
-wr.writerow(["Testing Percent: ", testingPercent])
-wr.writerow([ ])
+# wr.writerow([ ])
+# wr.writerow(["Epochs: ", hm_epochs])
+# wr.writerow(["Number of hidden nodes layer 1: ", n_nodes_hl1])
+# wr.writerow(["Number of hidden nodes layer 2: ", n_nodes_hl2])
+# wr.writerow(["Learning rate: ", learning_rate])
+# wr.writerow(["Drop out Rate Layer 1: ", dropOutRateL1])
+# wr.writerow(["Drop out Rate Layer 2: ", dropOutRateL2])
+# wr.writerow(["Training Percent: ", trainingPercent])
+# wr.writerow(["Testing Percent: ", testingPercent])
+# wr.writerow([ ])
 
 
 squattingData = np.genfromtxt(sys.path[0] + '\\trainingSquattingClean.csv', delimiter=',')
@@ -119,7 +119,7 @@ def train_neural_network(x):
 
     optimizer = tf.train.AdamOptimizer(learning_rate).minimize(cost)
 
-    wr.writerow([ "Run Number", "Training Accuracy", "Testing Accuracy" ])
+    #wr.writerow([ "Run Number", "Training Accuracy", "Testing Accuracy" ])
 
     with tf.Session() as sess:
 
@@ -186,7 +186,7 @@ def train_neural_network(x):
             accuracyPercentage2 = (accuracy/len(data_x))
             trialLabel = "Testing Accuracy on Entire Set:  "
             print(trialLabel, accuracyPercentage2)
-            wr.writerow([i, accuracyPercentage, accuracyPercentage2])
+            # wr.writerow([i, accuracyPercentage, accuracyPercentage2])
         
         # Play a sound to signal the numOfRuns complete
         winsound.PlaySound("SystemExit", winsound.SND_ALIAS)
@@ -198,7 +198,7 @@ def train_neural_network(x):
         # Preload cmu
         dG = dataGenerator.dataScriptGenerator()
 
-        continueProcessing = "N"
+        continueProcessing = "Y"
 
         while(continueProcessing == "Y" or continueProcessing == "y"):
             
@@ -224,53 +224,58 @@ def train_neural_network(x):
                         })
 
                     print("Network Output: " , predict[0])
+                    if (np.argmax(predict[0]) == 0):
+                        print("SQUATTING")
+                    elif (np.argmax(predict[0]) == 1):
+                        print("STANDING")
 
-            continueProcessing = input("Continue processing? ('Y' or 'N'), use LIVECAM? ('live'): ")
+            continueProcessing = input("Continue processing? ('Y' or 'N'): ")
 
 
         #######################
         # LIVE CAMERA TESTING #
         #######################
+        # Disabled for TA testing
 
-        while (continueProcessing == 'live' or continueProcessing == "y" or continueProcessing == "Y"):
+        # while (continueProcessing == 'live' or continueProcessing == "y" or continueProcessing == "Y"):
             
-            # Call image capture method
+        #     # Call image capture method
 
-            # real_time.realTimeCapture()
-            liveCam.getImage()
+        #     # real_time.realTimeCapture()
+        #     liveCam.getImage()
 
-            # Run Datascriptgenerator
-            dG.liveData()
+        #     # Run Datascriptgenerator
+        #     dG.liveData()
 
-            try:
-                # Run network test on new aClean.csv file
-                data_x = np.genfromtxt(sys.path[0] + '\\a.csv', delimiter=',')
+        #     try:
+        #         # Run network test on new aClean.csv file
+        #         data_x = np.genfromtxt(sys.path[0] + '\\a.csv', delimiter=',')
                 
-                if data_x.ndim == 1:
-                    data_x = np.resize(data_x, (1,36))
+        #         if data_x.ndim == 1:
+        #             data_x = np.resize(data_x, (1,36))
 
-                data_x[data_x < 0] = 0
+        #         data_x[data_x < 0] = 0
 
-                if (len(data_x)) > 0:
-                    for piece in range(len(data_x)):
+        #         if (len(data_x)) > 0:
+        #             for piece in range(len(data_x)):
                         
-                        input_x =  [data_x[piece]]
-                        predict = sess.run([prediction], feed_dict={
-                                x: input_x, 
-                                keep_probL1: 1.0, 
-                                keep_probL2: 1.0
-                            })
+        #                 input_x =  [data_x[piece]]
+        #                 predict = sess.run([prediction], feed_dict={
+        #                         x: input_x, 
+        #                         keep_probL1: 1.0, 
+        #                         keep_probL2: 1.0
+        #                     })
 
-                        # print("Network Output: " , predict[0])
+        #                 # print("Network Output: " , predict[0])
 
-                        # Print "SQUATTING" or "STANDING" output
-                        if (np.argmax(predict[0]) == 0):
-                            print("SQUATTING")
-                        elif (np.argmax(predict[0]) == 1):
-                            print("STANDING")
+        #                 # Print "SQUATTING" or "STANDING" output
+        #                 if (np.argmax(predict[0]) == 0):
+        #                     print("SQUATTING")
+        #                 elif (np.argmax(predict[0]) == 1):
+        #                     print("STANDING")
                 
-            except:
-                print("no human found")
+        #     except:
+        #         print("no human found")
 
             # continueProcessing = input("Continue Processing? ('Y' or 'N')")
 

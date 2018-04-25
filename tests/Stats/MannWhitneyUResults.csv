@@ -1,0 +1,14 @@
+,# samples,Z-score,P-val,Result (p<0.05)
+dropoutRate40_50,30,2.94949,0.00318,significant
+dropoutRate60_50,30,-0.45092,0.65272,not significant
+dropoutRate70_70,30,0.33265,0.7414,not significant
+epochs_minus_50,30,3.07516,0.00208,significant
+epochs_plus_50,30,0.05914,0.95216,not significant
+learning_rate_double,30,-1.76674,0.07672,not significant
+learning_rate_half,30,-1.21972,0.22246,not significant
+numOfHiddenNodes30_30,30,3.06777,0.00214,significant
+numOfHiddenNodes30_40,30,2.43204,0.0151,significant
+numOfHiddenNodes50_50,30,3.0382,0.00236,significant
+training_set_minus_10_percent,30,2.90514,0.00362,significant
+training_set_plus_10_percent,30,0.77618,0.4354,not significant
+Tanh,30,-0.43614,0.65994,not significant
