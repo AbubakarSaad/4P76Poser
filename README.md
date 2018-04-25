@@ -1,91 +1,41 @@
-# Poser FINAL PROJECT 4P76 (aka abu's shit at chess)
+# Poser FINAL PROJECT 4P76 
 
-keypoint labels and information
-https://github.com/CMU-Perceptual-Computing-Lab/openpose/blob/master/doc/output.md#keypoint-ordering
-
-Something to pull
+Our project estimate the giving pose of human execise. 
 
 ## Getting Started
 
-These instructions will get you a copy of the project up and running on your local machine for development and testing purposes. See deployment for notes on how to deploy the project on a live system.
+Clone the repo in local folder
 
 ### Prerequisites
 
-What things you need to install the software and how to install them
-
-```
-Give examples
-```
+- OpenCV
+- Tensorflow
+- tf-pose-estimation
 
 ### Installing
 
-A step by step series of examples that tell you have to get a development env running
+These dependenices are required before running the program
 
-Say what the step will be
-
-```
-Give the example
+```python
+pip install opencv-python
 ```
 
-And repeat
-
-```
-until finished
+```python
+pip install tensorflow
 ```
 
-End with an example of getting some data out of the system or using it for a little demo
 
 ## Running the program
 
-1. python run.py --model=cmu --resolution=432x368 --image=../images/p3_dance.png
-2. Keyspoints = In the estimator class => draw_humans method 
-
-### Break down into end to end tests
-
-Explain what these tests test and why
-
-```
-Give an example
+```python
+python tensor_flow.py
 ```
 
-### And coding style tests
-
-Explain what these tests test and why
-
-```
-Give an example
-```
-
-## Deployment
-
-Add additional notes about how to deploy this on a live system
-
-## Built With
-
-* [Dropwizard](http://www.dropwizard.io/1.0.2/docs/) - The web framework used
-* [Maven](https://maven.apache.org/) - Dependency Management
-* [ROME](https://rometools.github.io/rome/) - Used to generate RSS Feeds
-
-## Contributing
-
-Please read [CONTRIBUTING.md](https://gist.github.com/PurpleBooth/b24679402957c63ec426) for details on our code of conduct, and the process for submitting pull requests to us.
-
-## Versioning
-
-We use [SemVer](http://semver.org/) for versioning. For the versions available, see the [tags on this repository](https://github.com/your/project/tags). 
 
 ## Authors
+Abubakar Saad, Imran Quershi, Matthew Kirchhof, Sulman Quershi, Anthony Ferski
 
-* **Billie Thompson** - *Initial work* - [PurpleBooth](https://github.com/PurpleBooth)
-
-See also the list of [contributors](https://github.com/your/project/contributors) who participated in this project.
-
-## License
-
-This project is licensed under the MIT License - see the [LICENSE.md](LICENSE.md) file for details
 
 ## Acknowledgments
 
-* Hat tip to anyone who's code was used
-* Inspiration
-* etc
+* tf-pose-estimation
